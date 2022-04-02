@@ -37,7 +37,7 @@
     "@types/react-dom": "^17.0.14",
     "concurrently": "^7.0.0",
     "file-type": "^17.1.1",
-    "framer-motion": "4.1.17",
+    "framer-motion": "6.2.8",
     "image-hash": "^5.0.2",
     "node-dir": "^0.1.17",
     "react": "^17.0.2",
