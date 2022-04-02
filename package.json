@@ -9,7 +9,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron-dev": "electron .",
-    "start": "yarn react-scripts start; yarn build && electron ./dist/main/main.js",
+    "start": "yarn  react-scripts start; yarn build && electron ./dist/main/main.js",
     "dev": "concurrently --kill-others \"yarn react-scripts start\" \"yarn build && electron ./dist/main/main.js\""
   },
   "repository": "https://github.com/electron/electron-quick-start",

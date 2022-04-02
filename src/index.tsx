@@ -4,6 +4,7 @@ import { ColorModeScript } from "@chakra-ui/react";
 // import * as serviceWorker from "./serviceWorker";
 import React from "react";
 import ReactDOM from "react-dom";
+import * as ReactDOMClient from "react-dom/client";
 import { App } from "./client/App";
 
 declare global {
@@ -20,14 +21,16 @@ declare global {
 //   ipcRenderer: any;
 //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // }
+const container = document.getElementById("root");
+const root = container && ReactDOMClient.createRoot(container);
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ColorModeScript />
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+root &&
+  root.render(
+    <React.StrictMode>
+      <ColorModeScript />
+      <App />
+    </React.StrictMode>
+  );
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
