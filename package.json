@@ -23,7 +23,7 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^17.1.2"
+    "electron": "^18.0.1"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.6",
