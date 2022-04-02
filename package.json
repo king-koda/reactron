@@ -1,0 +1,63 @@
+{
+  "name": "electron-quick-start",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "src/main/main.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron-dev": "electron .",
+    "start": "yarn react-scripts start; yarn build && electron ./dist/main/main.js",
+    "dev": "concurrently --kill-others \"yarn react-scripts start\" \"yarn build && electron ./dist/main/main.js\""
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^17.1.2"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^1.8.6",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "@types/electron": "^1.6.10",
+    "@types/filesystem": "^0.0.32",
+    "@types/node": "^17.0.23",
+    "@types/node-dir": "^0.0.34",
+    "@types/react": "^17.0.41",
+    "@types/react-dom": "^17.0.14",
+    "concurrently": "^7.0.0",
+    "file-type": "^17.1.1",
+    "framer-motion": "4.1.17",
+    "image-hash": "^5.0.2",
+    "node-dir": "^0.1.17",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-icons": "^3.11.0",
+    "react-scripts": "^5.0.0",
+    "tsc": "^2.0.4",
+    "typescript": "^4.6.2",
+    "typesync": "^0.9.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
