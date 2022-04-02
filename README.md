@@ -10,7 +10,7 @@
 - vs code extensions: prettier, gitlens, eslint, camel case navigation, subword navigation
 - yarn installed
 - node js installed, probably by nvm is easiest? 
-- 
+
 ## To Use
 
 ```bash
