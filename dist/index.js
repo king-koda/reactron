@@ -32,7 +32,11 @@ const react_1 = require("@chakra-ui/react");
 // import * as serviceWorker from "./serviceWorker";
 const react_2 = __importDefault(require("react"));
 const ReactDOMClient = __importStar(require("react-dom/client"));
-const App_1 = require("./client/App");
+const App_1 = require("./renderer/client/App");
+//
+//
+////
+////
 // interface Window {
 //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 //   ipcRenderer: any;

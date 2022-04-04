@@ -1,16 +1,16 @@
 {
-  "name": "electron-quick-start",
+  "name": "reactron",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Photo manager",
   "main": "src/main/main.ts",
   "private": true,
   "scripts": {
+    "react-start": "react-scripts start",
     "build": "tsc",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-dev": "electron .",
-    "start": "yarn  react-scripts start; yarn build && electron ./dist/main/main.js",
-    "dev": "concurrently --kill-others \"yarn react-scripts start\" \"yarn build && electron ./dist/main/main.js\""
+    "electron-start": "yarn build && electron ./dist/main/main.js",
+    "start": "concurrently --kill-others \"yarn react-start\" \"yarn electron-start\""
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -36,6 +36,7 @@
     "@types/react": "^17.0.41",
     "@types/react-dom": "^17.0.14",
     "concurrently": "^7.0.0",
+    "electron-reload": "^2.0.0-alpha.1",
     "file-type": "^17.1.1",
     "framer-motion": "6.2.8",
     "image-hash": "^5.0.2",
@@ -43,6 +44,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-icons": "^4.3.1",
+    "react-router": "^6.3.0",
     "react-scripts": "^5.0.0",
     "tsc": "^2.0.4",
     "typescript": "^4.6.2",
