@@ -5,7 +5,7 @@ import { ColorModeScript } from "@chakra-ui/react";
 import React from "react";
 import ReactDOM from "react-dom";
 import * as ReactDOMClient from "react-dom/client";
-import { App } from "./client/App";
+import { App } from "./renderer/client/App";
 
 declare global {
   interface Window {
@@ -15,6 +15,10 @@ declare global {
     // ipcRenderer: any;
   }
 }
+//
+//
+////
+////
 
 // interface Window {
 //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
