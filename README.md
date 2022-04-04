@@ -23,3 +23,6 @@ yarn
 # Run the app
 yarn dev
 ```
+
+## Note
+- ignore the dist/ files, this is the folder where the typescript files we have get compiled into regular javascript
