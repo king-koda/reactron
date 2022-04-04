@@ -2,10 +2,15 @@
 import { app, BrowserWindow, ipcMain, dialog, Menu } from "electron";
 import * as path from "path";
 import * as fs from "fs";
+import electronReload from "electron-reload";
 
-const hasher = require("./hasher.js");
+// const hasher = require("./hasher.js");
 
 const isDev = true;
+
+if (isDev) {
+  electronReload(__dirname, {});
+}
 
 let mainWindow;
 
@@ -102,9 +107,9 @@ app.whenReady().then(() => {
 
   console.log("app ready");
   createWindow()
-    .then(
-      () =>
-        hasher.walk() && (isDev ? console.log("initial window created") : null)
+    .then(() =>
+      // hasher.walk() &&
+      isDev ? console.log("initial window created") : null
     )
     .catch((error) =>
       isDev ? console.log("error on initial create window") : null

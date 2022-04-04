@@ -57,9 +57,9 @@ const App = () => {
             console.log("file", file);
     }, [file]);
     return (react_2.default.createElement(react_1.Flex, { width: "100vw", height: "100vh", bgColor: "blue" },
-        react_2.default.createElement(react_1.Button, { id: "syncBtn", onClick: async () => {
-                setFile(await window.electronAPI.openFile());
-            } }, "FUCK")));
+        react_2.default.createElement(react_1.Flex, { height: "100%", width: "15%", bgColor: "darkblue", 
+            // align={"flex-end"}
+            alignSelf: "flex-end" })));
 };
 exports.App = App;
 //# sourceMappingURL=App.js.map

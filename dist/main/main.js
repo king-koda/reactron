@@ -22,12 +22,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules to control application life and create native browser window
 const electron_1 = require("electron");
 const path = __importStar(require("path"));
-const hasher = require("./hasher.js");
+const electron_reload_1 = __importDefault(require("electron-reload"));
+// const hasher = require("./hasher.js");
 const isDev = true;
+if (isDev) {
+    (0, electron_reload_1.default)(__dirname, {});
+}
 let mainWindow;
 async function handleFileOpen() {
     const { canceled, filePaths } = await electron_1.dialog.showOpenDialog(mainWindow);
@@ -115,7 +122,9 @@ electron_1.app.whenReady().then(() => {
     electron_1.ipcMain.handle("dialog:openFile", handleFileOpen);
     console.log("app ready");
     createWindow()
-        .then(() => hasher.walk() && (isDev ? console.log("initial window created") : null))
+        .then(() => 
+    // hasher.walk() &&
+    isDev ? console.log("initial window created") : null)
         .catch((error) => isDev ? console.log("error on initial create window") : null);
     electron_1.app.on("activate", function () {
         // On macOS it's common to re-create a window in the app when the
