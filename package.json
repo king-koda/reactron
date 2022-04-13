@@ -39,7 +39,7 @@
     "concurrently": "^7.1.0",
     "electron-reload": "^2.0.0-alpha.1",
     "file-type": "^17.1.1",
-    "framer-motion": "3.10.6",
+    "framer-motion": "6.2.10",
     "imghash": "^0.0.9",
     "js-logger": "^1.6.1",
     "node-cache": "^5.1.2",
