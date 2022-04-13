@@ -8,12 +8,12 @@ const react_1 = require("@chakra-ui/react");
 const react_2 = __importDefault(require("react"));
 const Views_1 = require("../views/Views");
 const react_router_dom_1 = require("react-router-dom");
+require("../styles/style.css");
 // const { ipcRenderer } = require("electron");
 const App = () => {
     // ipcRenderer.on("asynReply", (event: any, args: any) => {
     //   // const reply = document.getElementById("#reply");
     //   // if (reply) reply.innerHTML = args;
-    //   console.log(args);
     // });
     // const [image, setImage] = useState<any>();
     // const [file, setFile] = useState<any>();

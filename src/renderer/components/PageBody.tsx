@@ -6,7 +6,7 @@ export const PageBody = ({ children, ...rest }: FlexProps) => {
     <Flex
       className="pg-body"
       height={"80%"}
-      width={"90%"}
+      width={"100%"}
       bgColor="white"
       top="20%"
       left="10%"
@@ -14,6 +14,7 @@ export const PageBody = ({ children, ...rest }: FlexProps) => {
       position={"fixed"}
       borderBottom={"solid 6px black"}
       borderLeft={"solid 6px black"}
+      borderRight={"solid 6px black"}
       {...rest}
     >
       {children}

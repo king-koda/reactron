@@ -3,18 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HashTable = exports.walk = exports.getJSONFromFile = exports.getStrigifiedHtKeys = exports.saveJSON2File = exports.findDuplicates = void 0;
+exports.walk = exports.getJSONFromFile = exports.getStrigifiedHtKeys = exports.saveJSON2File = exports.findDuplicates = void 0;
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const node_dir_1 = __importDefault(require("node-dir"));
 const imghash_1 = __importDefault(require("imghash"));
+const js_logger_1 = __importDefault(require("js-logger"));
 function findDuplicates() { }
 exports.findDuplicates = findDuplicates;
 function saveJSON2File(cache) {
     const cacheKeyList = cache.keys();
     const cachedHt = cache.mget(cacheKeyList);
-    console.log(cachedHt);
-    // jsonHt;
+    js_logger_1.default.debug("cachedHt: ", cachedHt);
     fs_1.default.writeFileSync("C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json", JSON.stringify(cachedHt, null, 2));
 }
 exports.saveJSON2File = saveJSON2File;
@@ -46,64 +46,9 @@ async function walk(cache) {
                     cache.set(hash, [file], 360000); // add new hash- value array pair
                 }
             })
-                .catch((err) => console.log("imagehash error:", err));
+                .catch((err) => js_logger_1.default.debug("imagehash error:", err));
         }
     }
 }
 exports.walk = walk;
-class HashTable {
-    // ht;
-    // hashCount: number = 0;
-    constructor() {
-        // ht = require("./ht.json");
-        // return this.getFile();
-    }
-    getFile() {
-        let ht = {};
-        const data = fs_1.default.readFileSync("C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json", "utf8");
-        try {
-            ht = JSON.parse(data);
-        }
-        catch (e) {
-            console.log("errorrrrr", e);
-        }
-        return ht;
-    }
-    setItem(value, key, ht) {
-        // let ht = this.getFile();
-        // if (Object.keys(ht).length !== 0 && ht[key]) {
-        //   // console.log("shouldnt be here");
-        //   console.log("this fucking key:", key);
-        //   // console.log(" innn ht[key]", JSON.stringify(ht[key]));
-        //   // console.log("innn value", value);
-        //   ht[key] = [value]; // if key exists, push new value into value array
-        // } else {
-        if (ht) {
-            // console.log("before", ht);
-            ht[key] = value; //[...ht[key], ...value];
-            // console.log("after", ht);
-            // }
-            // this.saveTable(ht);
-            return ht;
-            //   }
-            // );
-        }
-        return false;
-    }
-    getItem(key, ht) {
-        if (ht[key]) {
-            return ht[key];
-        }
-    }
-    // public getTable() {
-    //   return ht;
-    // }
-    saveTable(ht) {
-        if (ht) {
-            const htStringified = JSON.stringify(ht, null, 2);
-            console.log("ht @ save", ht);
-        }
-    }
-}
-exports.HashTable = HashTable;
 //# sourceMappingURL=hasher.js.map

@@ -1,0 +1,18 @@
+.chakra-button {
+  color: white;
+  background: white;
+}
+.chakra-button:hover {
+  color: white;
+  background: white;
+}
+.chakra-button:focus {
+  color: white;
+  background: white;
+  box-shadow: white;
+}
+.chakra-button:active {
+  color: white;
+  background: white;
+  box-shadow: white;
+}

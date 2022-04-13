@@ -10,6 +10,7 @@ import {
 import React, { createRef, useEffect, useState } from "react";
 import { Views } from "../views/Views";
 import { BrowserRouter } from "react-router-dom";
+import "../styles/style.css";
 
 // const { ipcRenderer } = require("electron");
 

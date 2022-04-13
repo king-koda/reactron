@@ -31,15 +31,14 @@ const electron_1 = require("electron");
 const path = __importStar(require("path"));
 const electron_reload_1 = __importDefault(require("electron-reload"));
 const hasher_1 = require("./hasher");
-// import cache from "memory-cache";
 const node_cache_1 = __importDefault(require("node-cache"));
+const js_logger_1 = __importDefault(require("js-logger"));
 const isDev = true;
 const cache = new node_cache_1.default();
 if (isDev) {
     (0, electron_reload_1.default)(__dirname, {});
 }
 let mainWindow;
-var filePathStore = {};
 async function handleFileOpen() {
     const { canceled, filePaths } = await electron_1.dialog.showOpenDialog(mainWindow);
     if (canceled) {
@@ -112,22 +111,22 @@ async function createWindow() {
     const menu = getMenuConfig();
     mainWindow
         .loadURL("http://localhost:3000")
-        .catch((error) => console.log(error));
+        .catch((error) => js_logger_1.default.debug("main window load url error", error));
     // mainWindow
     //   .loadFile(path.join(__dirname, "/index.html"))
-    //   .catch((error) => console.log(error));
+    //   .catch((error) => Logger.debug(error));
     // Open the DevTools.
     isDev ? mainWindow.webContents.openDevTools() : null;
 }
 async function walkFs() {
     return await (0, hasher_1.walk)(cache)
         .then(() => {
-        console.log("walkFs done");
+        js_logger_1.default.debug("walkFs done");
         (0, hasher_1.saveJSON2File)(cache); // need to manually convert to json string because the formatting in file is fucked
     })
         .then(() => (0, hasher_1.getStrigifiedHtKeys)(cache))
         .catch((err) => {
-        console.log("walkFs error", err);
+        js_logger_1.default.debug("walkFs error", err);
     });
 }
 // This method will be called when Electron has finished
@@ -137,24 +136,23 @@ electron_1.app.whenReady().then(() => {
     console.log("app ready");
     createWindow()
         .then(() => {
-        isDev ? console.log("initial window created") : null;
+        isDev ? js_logger_1.default.debug("initial window created") : null;
     })
-        .catch((error) => isDev ? console.log("error on initial create window") : null);
+        .catch((error) => isDev ? js_logger_1.default.debug("error on initial create window") : null);
     electron_1.app.on("activate", function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (electron_1.BrowserWindow.getAllWindows().length === 0)
             createWindow()
-                .then(() => isDev ? console.log("window created on app activate") : null)
-                .catch((error) => isDev ? console.log("error on create window activate") : null);
+                .then(() => isDev ? js_logger_1.default.debug("window created on app activate") : null)
+                .catch((error) => isDev ? js_logger_1.default.debug("error on create window activate") : null);
     });
     electron_1.ipcMain.handle("run:getHtKeys", () => cache.keys());
     electron_1.ipcMain.handle("dialog:openFile", handleFileOpen);
     electron_1.ipcMain.handle("run:walkFs", async (event) => {
         const result = await walkFs()
             .then((result) => result)
-            .catch((err) => console.log("error"));
-        console.log("RESULT", result);
+            .catch((err) => js_logger_1.default.debug("walkFs main error"));
         return result;
     });
     // ipcMain.on("deeznutz", (event, arg) => {

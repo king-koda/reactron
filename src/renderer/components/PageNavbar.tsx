@@ -13,7 +13,7 @@ export const PageNavbar = ({ children, ...rest }: FlexProps) => {
     <Flex
       className="pgnavbar"
       height={"20%"}
-      width={"90%"}
+      width={"100%"}
       //top="calc(20%)"
       bgColor="white"
       zIndex={4}
@@ -21,7 +21,9 @@ export const PageNavbar = ({ children, ...rest }: FlexProps) => {
       position={"fixed"}
       borderBottom={"solid 6px black"}
       borderLeft={"solid 6px black"}
+      borderRight={"solid 6px black"}
       borderTop={"solid 6px black"}
+      padding="25px"
       {...rest}
     >
       {children}
