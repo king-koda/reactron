@@ -3,10 +3,12 @@ import { app, BrowserWindow, ipcMain, dialog, Menu } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 import electronReload from "electron-reload";
-
-// const hasher = require("./hasher.js");
+import { getStrigifiedHtKeys, saveJSON2File, walk } from "./hasher";
+import NodeCache from "node-cache";
+import Logger from "js-logger";
 
 const isDev = true;
+const cache = new NodeCache();
 
 if (isDev) {
   electronReload(__dirname, {});
@@ -91,28 +93,36 @@ async function createWindow() {
 
   mainWindow
     .loadURL("http://localhost:3000")
-    .catch((error) => console.log(error));
+    .catch((error) => Logger.debug("main window load url error", error));
   // mainWindow
   //   .loadFile(path.join(__dirname, "/index.html"))
-  //   .catch((error) => console.log(error));
+  //   .catch((error) => Logger.debug(error));
   // Open the DevTools.
   isDev ? mainWindow.webContents.openDevTools() : null;
 }
 
+async function walkFs() {
+  return await walk(cache)
+    .then(() => {
+      Logger.debug("walkFs done");
+      saveJSON2File(cache); // need to manually convert to json string because the formatting in file is fucked
+    })
+    .then(() => getStrigifiedHtKeys(cache))
+    .catch((err) => {
+      Logger.debug("walkFs error", err);
+    });
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  ipcMain.handle("dialog:openFile", handleFileOpen);
-
   console.log("app ready");
   createWindow()
-    .then(() =>
-      // hasher.walk() &&
-      isDev ? console.log("initial window created") : null
-    )
+    .then(() => {
+      isDev ? Logger.debug("initial window created") : null;
+    })
     .catch((error) =>
-      isDev ? console.log("error on initial create window") : null
+      isDev ? Logger.debug("error on initial create window") : null
     );
 
   app.on("activate", function () {
@@ -121,11 +131,20 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0)
       createWindow()
         .then(() =>
-          isDev ? console.log("window created on app activate") : null
+          isDev ? Logger.debug("window created on app activate") : null
         )
         .catch((error) =>
-          isDev ? console.log("error on create window activate") : null
+          isDev ? Logger.debug("error on create window activate") : null
         );
+  });
+
+  ipcMain.handle("run:getHtKeys", () => cache.keys() as any);
+  ipcMain.handle("dialog:openFile", handleFileOpen);
+  ipcMain.handle("run:walkFs", async (event) => {
+    const result = await walkFs()
+      .then((result) => result)
+      .catch((err) => Logger.debug("walkFs main error"));
+    return result;
   });
 
   // ipcMain.on("deeznutz", (event, arg) => {

@@ -17,7 +17,6 @@ export const App = () => {
   // ipcRenderer.on("asynReply", (event: any, args: any) => {
   //   // const reply = document.getElementById("#reply");
   //   // if (reply) reply.innerHTML = args;
-  //   console.log(args);
   // });
 
   // const [image, setImage] = useState<any>();
@@ -70,6 +69,7 @@ export const App = () => {
       >
         FUCK
       </Button> */
+
     /* <Flex
         height="100%"
         width="15%"

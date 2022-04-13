@@ -9,6 +9,11 @@
 // const ipc = require("electron").ipcRenderer,
 //   asyncBtn = document.querySelector("#syncBtn");
 // asyncBtn = document.querySelector("#asyncBtn");
+// (async () => {
+//   const response = await window.electronAPI.walkFs();
+//   console.log("hiya", response); // we now have the response from the main thread without exposing
+//   // ipcRenderer, leaving the app less vulnerable to attack
+// })();
 // let replyDiv = document.querySelector("#reply");
 // syncBtn.addEventListener("click", () => {
 //   let reply = ipc.sendSync("synMessage", "A sync message to main");

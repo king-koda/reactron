@@ -1,60 +1,62 @@
-import { imageHash } from "image-hash";
 import { fileTypeFromFile } from "file-type";
 import path from "path";
-
-const dir = require("node-dir");
+import fs from "fs";
+import dir from "node-dir";
+import cloneDeep from "lodash";
+import cache from "node-cache";
+import imgHash from "imghash";
+import { json } from "stream/consumers";
+import NodeCache from "node-cache";
+import Logger from "js-logger";
 
 export function findDuplicates() {}
 
-export function walk() {
-  console.log("suck me off");
-  const folderSignature = path.join(__dirname, "..", "..", "test_images");
-  dir.files(folderSignature, function (err, files) {
-    if (err) throw err;
-    console.log("files", files);
+export function saveJSON2File(cache: NodeCache) {
+  const cacheKeyList: string[] = cache.keys();
+  const cachedHt = cache.mget(cacheKeyList);
 
-    files.forEach((file) => {
-      const path = require("path");
-      const fs = require("fs");
-      // imageHash(file, 16, true, (error, hash) => {
-      //   if (error) throw error;
-      //   // console.log("file", file);
-      //   console.log("hash", hash);
-      //   //path.basename(file);
+  Logger.debug("cachedHt: ", cachedHt);
 
-      //   fs.mkdir(
-      //     folderSignature + hash,
-      //     {
-      //       recursive: false,
-      //     },
-      //     (error, dir) => {
-      //       if (error) {
-      //         if (!!error.message.match(/.*file already exists.*/)) {
-      //           //for inserting duplicates into the already created folder
-      //           fs.rename(
-      //             file,
-      //             folderSignature + hash + "/" + path.basename(file),
-      //             (error, renamedFile) => {}
-      //           );
-      //         }
-      //       }
-      //       if (dir) {
-      //         //for creating new folders for new hash image signatures
-      //         fs.rename(
-      //           file,
-      //           folderSignature + hash + "/" + path.basename(file),
-      //           (error, renamedFile) => {}
-      //         );
-      //       }
-
-      //       // console.log("file", file);
-      //       // console.log("dir", dir);
-      //     }
-      //   );
-      // });
-
-      console.log(path.basename(file));
-    });
-  });
+  fs.writeFileSync(
+    "C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json",
+    JSON.stringify(cachedHt, null, 2)
+  );
 }
-export function hash() {}
+
+export function getStrigifiedHtKeys(cache: NodeCache) {
+  return JSON.stringify(cache.keys(), null, 2);
+}
+
+export function getJSONFromFile() {
+  return fs.readFileSync(
+    "C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json"
+  );
+}
+
+export async function walk(cache: NodeCache) {
+  const folderSignature = path.join(__dirname, "..", "..", "test_images");
+  const files = dir.files(folderSignature, { sync: true });
+
+  // go through all files in the directory
+
+  if (files) {
+    // if we have files to process
+    for (const [index, file] of files.entries()) {
+      // loop through each file
+
+      await imgHash
+        .hash(file, 16, "hex")
+        .then((hash) => {
+          const cachedValue: string[] | undefined | null = cache.get(hash); //get values for that hash value if exists, could be an array or some other return type
+
+          if (!!cachedValue && Array.isArray(cachedValue)) {
+            cachedValue?.push(file); // add new value to the value array
+            cache.set(hash, cachedValue, 360000); // put values back at that hash key
+          } else {
+            cache.set(hash, [file], 360000); // add new hash- value array pair
+          }
+        })
+        .catch((err) => Logger.debug("imagehash error:", err));
+    }
+  }
+}
