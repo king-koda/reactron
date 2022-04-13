@@ -11,10 +11,11 @@ export const PageSidebar = ({ ...rest }: FlexProps) => {
       justifySelf={"flex-end"}
       bgColor="white"
       fill="white"
-      zIndex={1}
+      zIndex={3}
       borderRight={"solid 6px black"}
       borderLeft={"solid 6px black"}
       borderBottom={"solid 6px black"}
+      borderTop={"solid 6px black"}
       {...rest}
     ></Flex>
   );

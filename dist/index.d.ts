@@ -4,6 +4,8 @@ declare global {
         receive: any;
         electronAPI: {
             openFile: () => any;
+            walkFs: () => Promise<any>;
+            getHtKeys: () => any;
         };
     }
 }
