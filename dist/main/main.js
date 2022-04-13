@@ -30,12 +30,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path = __importStar(require("path"));
 const electron_reload_1 = __importDefault(require("electron-reload"));
-// const hasher = require("./hasher.js");
+const hasher_1 = require("./hasher");
+// import cache from "memory-cache";
+const node_cache_1 = __importDefault(require("node-cache"));
 const isDev = true;
+const cache = new node_cache_1.default();
 if (isDev) {
     (0, electron_reload_1.default)(__dirname, {});
 }
 let mainWindow;
+var filePathStore = {};
 async function handleFileOpen() {
     const { canceled, filePaths } = await electron_1.dialog.showOpenDialog(mainWindow);
     if (canceled) {
@@ -115,16 +119,26 @@ async function createWindow() {
     // Open the DevTools.
     isDev ? mainWindow.webContents.openDevTools() : null;
 }
+async function walkFs() {
+    return await (0, hasher_1.walk)(cache)
+        .then(() => {
+        console.log("walkFs done");
+        (0, hasher_1.saveJSON2File)(cache); // need to manually convert to json string because the formatting in file is fucked
+    })
+        .then(() => (0, hasher_1.getStrigifiedHtKeys)(cache))
+        .catch((err) => {
+        console.log("walkFs error", err);
+    });
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 electron_1.app.whenReady().then(() => {
-    electron_1.ipcMain.handle("dialog:openFile", handleFileOpen);
     console.log("app ready");
     createWindow()
-        .then(() => 
-    // hasher.walk() &&
-    isDev ? console.log("initial window created") : null)
+        .then(() => {
+        isDev ? console.log("initial window created") : null;
+    })
         .catch((error) => isDev ? console.log("error on initial create window") : null);
     electron_1.app.on("activate", function () {
         // On macOS it's common to re-create a window in the app when the
@@ -133,6 +147,15 @@ electron_1.app.whenReady().then(() => {
             createWindow()
                 .then(() => isDev ? console.log("window created on app activate") : null)
                 .catch((error) => isDev ? console.log("error on create window activate") : null);
+    });
+    electron_1.ipcMain.handle("run:getHtKeys", () => cache.keys());
+    electron_1.ipcMain.handle("dialog:openFile", handleFileOpen);
+    electron_1.ipcMain.handle("run:walkFs", async (event) => {
+        const result = await walkFs()
+            .then((result) => result)
+            .catch((err) => console.log("error"));
+        console.log("RESULT", result);
+        return result;
     });
     // ipcMain.on("deeznutz", (event, arg) => {
     //   mainWindow.webContents.send("deeznutz", "hi");

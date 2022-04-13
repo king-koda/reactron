@@ -1,9 +1,18 @@
+const { default: Logger } = require("js-logger");
+
 // const { ipcRenderer, contextBridge } = require("electron");
 window.ipcRenderer = require("electron").ipcRenderer;
 window.contextBridge = require("electron").contextBridge;
 
 window.contextBridge.exposeInMainWorld("electronAPI", {
   openFile: () => ipcRenderer.invoke("dialog:openFile"),
+  walkFs: async () => {
+    return await ipcRenderer
+      .invoke("run:walkFs")
+      .then()
+      .catch((err) => Logger.debug("walkFs err", err));
+  },
+  getHtKeys: () => ipcRenderer.invoke("run:getHtKeys"),
 });
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // window.ipcRenderer = ipcRenderer;

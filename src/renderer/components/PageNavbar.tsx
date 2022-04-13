@@ -8,23 +8,24 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 
-export const PageNavbar = ({ ...rest }: FlexProps) => {
+export const PageNavbar = ({ children, ...rest }: FlexProps) => {
   return (
     <Flex
       className="pgnavbar"
-      height={"10%"}
-      width={"100%"}
-      top="calc(20%)"
+      height={"20%"}
+      width={"90%"}
+      //top="calc(20%)"
       bgColor="white"
-      zIndex={2}
+      zIndex={4}
       fill="white"
       position={"fixed"}
       borderBottom={"solid 6px black"}
-      borderRight={"solid 6px black"}
       borderLeft={"solid 6px black"}
+      borderTop={"solid 6px black"}
       {...rest}
     >
-      <Tabs width="100%" height="100%">
+      {children}
+      {/* <Tabs width="100%" height="100%">
         <TabPanels>
           <TabPanel tabIndex={0}>
             <Text color="black">dawdawd</Text>
@@ -39,7 +40,7 @@ export const PageNavbar = ({ ...rest }: FlexProps) => {
             <Text color="black">dawdawd</Text>
           </TabPanel>
         </TabPanels>
-      </Tabs>
+      </Tabs> */}
     </Flex>
   );
 };

@@ -7,7 +7,7 @@ exports.PageBody = void 0;
 const react_1 = require("@chakra-ui/react");
 const react_2 = __importDefault(require("react"));
 const PageBody = ({ children, ...rest }) => {
-    return (react_2.default.createElement(react_1.Flex, { className: "pg-body", height: "70%", width: "90%", bgColor: "white", top: "30%", left: "10%", zIndex: 3, position: "fixed", borderRight: "solid 6px black", borderBottom: "solid 6px black", ...rest }, children));
+    return (react_2.default.createElement(react_1.Flex, { className: "pg-body", height: "80%", width: "90%", bgColor: "white", top: "20%", left: "10%", zIndex: 3, position: "fixed", borderBottom: "solid 6px black", borderLeft: "solid 6px black", ...rest }, children));
 };
 exports.PageBody = PageBody;
 //# sourceMappingURL=PageBody.js.map

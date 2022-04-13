@@ -1,16 +1,26 @@
-import { Button, Flex, Image, Input, Text } from "@chakra-ui/react";
+import {
+  Button,
+  ChakraProvider,
+  Flex,
+  Image,
+  Input,
+  Text,
+  theme,
+} from "@chakra-ui/react";
 import React, { createRef, useEffect, useState } from "react";
+import { Views } from "../views/Views";
+import { BrowserRouter } from "react-router-dom";
+
 // const { ipcRenderer } = require("electron");
 
 export const App = () => {
   // ipcRenderer.on("asynReply", (event: any, args: any) => {
   //   // const reply = document.getElementById("#reply");
   //   // if (reply) reply.innerHTML = args;
-  //   console.log(args);
   // });
 
-  const [image, setImage] = useState<any>();
-  const [file, setFile] = useState<any>();
+  // const [image, setImage] = useState<any>();
+  // const [file, setFile] = useState<any>();
 
   // const file = createRef<HTMLInputElement>();
   // const file: any = useRef(null);
@@ -32,13 +42,18 @@ export const App = () => {
 
   // console.log("file:", file?.current?.files);
 
-  useEffect(() => {
-    if (file) console.log("file", file);
-  }, [file]);
+  // useEffect(() => {
+  //   if (file) console.log("file", file);
+  // }, [file]);
 
   return (
-    <Flex width="100vw" height="100vh" bgColor={"blue"}>
-      {/* <Button>Potato</Button>
+    <ChakraProvider theme={theme}>
+      <BrowserRouter>
+        <Views></Views>
+      </BrowserRouter>
+    </ChakraProvider>
+    // <Flex width="100vw" height="100vh" bgColor={"blue"}>
+    /* <Button>Potato</Button>
       <Button
         id="syncBtn"
         onClick={async () => {
@@ -53,17 +68,18 @@ export const App = () => {
         // }}
       >
         FUCK
-      </Button> */}
-      <Flex
+      </Button> */
+
+    /* <Flex
         height="100%"
         width="15%"
         bgColor="darkblue"
         // align={"flex-end"}
         alignSelf="flex-end"
-      ></Flex>
+      ></Flex> */
 
-      {/* <Input ref={file} type="file" onChange={handleChange} /> */}
-      {/* <Image src={image}></Image> */}
-    </Flex>
+    /* <Input ref={file} type="file" onChange={handleChange} /> */
+    /* <Image src={image}></Image> */
+    // </Flex>
   );
 };
