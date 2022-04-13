@@ -3994,9 +3994,10 @@ electron-to-chromium@^1.4.84:
   version "1.4.103"
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.103.tgz"
 
-electron@*, electron@^18.0.1:
-  version "18.0.1"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-18.0.1.tgz#70653ecee008bea8a4240da78d0f5a426bb24d50"
+electron@*, electron@^18.0.3:
+  version "18.0.3"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-18.0.3.tgz#58713c92b44e439881540d18910d193defb0c2b4"
+  integrity sha512-QRUZkGL8O/8CyDmTLSjBeRsZmGTPlPVeWnnpkdNqgHYYaOc/A881FKMiNzvQ9Cj0a+rUavDdwBUfUL82U3Ay7w==
   dependencies:
     "@electron/get" "^1.13.0"
     "@types/node" "^16.11.26"
@@ -4650,14 +4651,6 @@ framer-motion@3.10.6:
   version "3.10.6"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-3.10.6.tgz#67737ef05ed0408860751d81c919770ac831b394"
   integrity sha512-OxOtKgQS4km9a8dm0IMBtNNp4f0DiHfQ/IzxKs818+Kg9V/Ve/pRUJ2dtWBb6+W4lIPNLgRSpbOwOACVj15XcQ==
-  dependencies:
-    framesync "5.2.0"
-    hey-listen "^1.0.8"
-    popmotion "9.3.1"
-    style-value-types "4.1.1"
-    tslib "^1.10.0"
-  optionalDependencies:
-    "@emotion/is-prop-valid" "^0.8.2"
 
 framesync@5.2.0:
   version "5.2.0"
