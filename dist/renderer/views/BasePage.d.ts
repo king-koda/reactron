@@ -1,2 +1,2 @@
-import { FlexProps } from "@chakra-ui/react";
+import { FlexProps } from '@chakra-ui/react';
 export declare const BasePage: ({ children }: FlexProps) => JSX.Element;

@@ -5,25 +5,25 @@ import {
   TabPanels,
   Tabs,
   Text,
-} from "@chakra-ui/react";
-import React from "react";
+} from '@chakra-ui/react';
+import React from 'react';
 
 export const PageNavbar = ({ children, ...rest }: FlexProps) => {
   return (
     <Flex
-      className="pgnavbar"
-      height={"20%"}
-      width={"100%"}
+      className='pgnavbar'
+      height={'20%'}
+      width={'100%'}
       //top="calc(20%)"
-      bgColor="white"
+      bgColor='rgba(0, 0, 0, 0.0)'
       zIndex={4}
-      fill="white"
-      position={"fixed"}
-      borderBottom={"solid 6px black"}
-      borderLeft={"solid 6px black"}
-      borderRight={"solid 6px black"}
-      borderTop={"solid 6px black"}
-      padding="25px"
+      fill='white'
+      position={'fixed'}
+      borderBottom={'solid 6px black'}
+      borderLeft={'solid 6px black'}
+      borderRight={'solid 6px black'}
+      borderTop={'solid 6px black'}
+      padding='25px'
       {...rest}
     >
       {children}

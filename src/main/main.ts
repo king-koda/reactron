@@ -1,14 +1,20 @@
 // Modules to control application life and create native browser window
-import { app, BrowserWindow, ipcMain, dialog, Menu } from "electron";
-import * as path from "path";
-import * as fs from "fs";
-import electronReload from "electron-reload";
-import { getStrigifiedHtKeys, saveJSON2File, walk } from "./hasher";
-import NodeCache from "node-cache";
-import Logger from "js-logger";
+import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron';
+import * as path from 'path';
+import * as fs from 'fs';
+import electronReload from 'electron-reload';
+import {
+  getFilesFromHashKey,
+  getStrigifiedHtKeys,
+  saveJSON2File,
+  walk,
+} from './hasher';
+import NodeCache from 'node-cache';
+import Logger from 'js-logger';
 
 const isDev = true;
-const cache = new NodeCache();
+const gNodeCache = new NodeCache();
+Logger.setLevel(Logger.DEBUG);
 
 if (isDev) {
   electronReload(__dirname, {});
@@ -28,41 +34,41 @@ async function handleFileOpen() {
 function getMenuConfig() {
   return Menu.buildFromTemplate([
     {
-      label: "File",
+      label: 'File',
       submenu: [
         {
-          click: () => mainWindow.webContents.send("update-counter", 1),
-          label: "Increment",
+          click: () => mainWindow.webContents.send('update-counter', 1),
+          label: 'Increment',
         },
         {
-          click: () => mainWindow.webContents.send("update-counter", -1),
-          label: "Decrement",
+          click: () => mainWindow.webContents.send('update-counter', -1),
+          label: 'Decrement',
         },
       ],
     },
     {
-      label: "Edit",
+      label: 'Edit',
       submenu: [
         {
-          click: () => mainWindow.webContents.send("update-counter", 1),
-          label: "Increment",
+          click: () => mainWindow.webContents.send('update-counter', 1),
+          label: 'Increment',
         },
         {
-          click: () => mainWindow.webContents.send("update-counter", -1),
-          label: "Decrement",
+          click: () => mainWindow.webContents.send('update-counter', -1),
+          label: 'Decrement',
         },
       ],
     },
     {
-      label: "Preferences",
+      label: 'Preferences',
       submenu: [
         {
-          click: () => mainWindow.webContents.send("update-counter", 1),
-          label: "Increment",
+          click: () => mainWindow.webContents.send('update-counter', 1),
+          label: 'Increment',
         },
         {
-          click: () => mainWindow.webContents.send("update-counter", -1),
-          label: "Decrement",
+          click: () => mainWindow.webContents.send('update-counter', -1),
+          label: 'Decrement',
         },
       ],
     },
@@ -75,7 +81,7 @@ async function createWindow() {
     width: 1920,
     height: 1080,
     webPreferences: {
-      preload: path.join(__dirname, "..", "..", "preload.js"),
+      preload: path.join(__dirname, '..', '..', 'preload.js'),
       nodeIntegration: true,
       contextIsolation: true,
     },
@@ -92,8 +98,8 @@ async function createWindow() {
   const menu = getMenuConfig();
 
   mainWindow
-    .loadURL("http://localhost:3000")
-    .catch((error) => Logger.debug("main window load url error", error));
+    .loadURL('http://localhost:3000')
+    .catch((error) => Logger.debug('main window load url error', error));
   // mainWindow
   //   .loadFile(path.join(__dirname, "/index.html"))
   //   .catch((error) => Logger.debug(error));
@@ -102,49 +108,58 @@ async function createWindow() {
 }
 
 async function walkFs() {
-  return await walk(cache)
+  return await walk(gNodeCache)
     .then(() => {
-      Logger.debug("walkFs done");
-      saveJSON2File(cache); // need to manually convert to json string because the formatting in file is fucked
+      Logger.debug('walkFs done');
+      saveJSON2File(gNodeCache); // need to manually convert to json string because the formatting in file is fucked
     })
-    .then(() => getStrigifiedHtKeys(cache))
+    .then(() => getStrigifiedHtKeys(gNodeCache))
     .catch((err) => {
-      Logger.debug("walkFs error", err);
+      Logger.debug('walkFs error', err);
     });
 }
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  console.log("app ready");
+  console.log('app ready');
   createWindow()
     .then(() => {
-      isDev ? Logger.debug("initial window created") : null;
+      isDev ? Logger.debug('initial window created') : null;
     })
     .catch((error) =>
-      isDev ? Logger.debug("error on initial create window") : null
+      isDev ? Logger.debug('error on initial create window') : null
     );
 
-  app.on("activate", function () {
+  app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0)
       createWindow()
         .then(() =>
-          isDev ? Logger.debug("window created on app activate") : null
+          isDev ? Logger.debug('window created on app activate') : null
         )
         .catch((error) =>
-          isDev ? Logger.debug("error on create window activate") : null
+          isDev ? Logger.debug('error on create window activate') : null
         );
   });
 
-  ipcMain.handle("run:getHtKeys", () => cache.keys() as any);
-  ipcMain.handle("dialog:openFile", handleFileOpen);
-  ipcMain.handle("run:walkFs", async (event) => {
+  // ipcMain.handle("run:getHtKeys", () => gNodeCache.keys() as any);
+  ipcMain.handle('dialog:openFile', handleFileOpen);
+  ipcMain.handle('run:getPhotos', async (event, hash) => {
+    return await getFilesFromHashKey(gNodeCache, hash)
+      .then()
+      .catch((err) => console.log('get files from hash error:', err));
+  });
+
+  ipcMain.handle('run:walkFs', async (event) => {
     const result = await walkFs()
       .then((result) => result)
-      .catch((err) => Logger.debug("walkFs main error"));
-    return result;
+      .catch((err) => Logger.debug('walkFs main error'));
+    if (!!result) {
+      return result;
+    }
+    return false;
   });
 
   // ipcMain.on("deeznutz", (event, arg) => {
@@ -191,8 +206,8 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on("window-all-closed", function () {
-  if (process.platform !== "darwin") app.quit();
+app.on('window-all-closed', function () {
+  if (process.platform !== 'darwin') app.quit();
 });
 
 // ipcMain.on("invokeAction", (event, args) => {

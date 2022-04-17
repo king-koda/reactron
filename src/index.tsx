@@ -14,7 +14,8 @@ declare global {
     electronAPI: {
       openFile: () => any;
       walkFs: () => Promise<any>;
-      getHtKeys: () => any;
+      getPhotos: (string) => Promise<any>;
+      // getHtKeys: () => any;
     };
     // ipcRenderer: any;
   }

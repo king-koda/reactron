@@ -13,6 +13,7 @@ window.contextBridge.exposeInMainWorld("electronAPI", {
       .catch((err) => Logger.debug("walkFs err", err));
   },
   getHtKeys: () => ipcRenderer.invoke("run:getHtKeys"),
+  getPhotos: (hash) => ipcRenderer.invoke("run:getPhotos", hash),
 });
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // window.ipcRenderer = ipcRenderer;

@@ -5,7 +5,7 @@ declare global {
         electronAPI: {
             openFile: () => any;
             walkFs: () => Promise<any>;
-            getHtKeys: () => any;
+            getPhotos: (string: any) => Promise<any>;
         };
     }
 }

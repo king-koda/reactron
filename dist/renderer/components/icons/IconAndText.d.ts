@@ -7,6 +7,7 @@ export declare type IconAndTextProps = {
     iconProps?: IconProps;
     textProps?: TextProps;
     flexProps?: FlexProps;
+    onClick?: () => any;
 };
-declare const IconAndText: ({ icon, text, flex, iconProps, textProps, flexProps, ...rest }: IconAndTextProps) => JSX.Element;
+declare const IconAndText: ({ icon, text, flex, onClick, iconProps, textProps, flexProps, ...rest }: IconAndTextProps) => JSX.Element;
 export default IconAndText;

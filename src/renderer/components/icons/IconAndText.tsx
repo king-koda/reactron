@@ -33,30 +33,36 @@ const IconAndText = ({
 }: IconAndTextProps) => {
   return (
     <Flex
-      width="150px"
-      height="150px"
+      width="100px"
+      height="100px"
       display="block"
       align="center"
       textAlign={"center"}
       onClick={onClick}
+      userSelect="none"
       _hover={{ cursor: "pointer", border: "solid 2px blue" }}
       {...flexProps}
     >
-      <IconContext.Provider
+      {/* <IconContext.Provider
         value={{ color: "blue", size: "50px", style: { color: "yellow" } }}
-      >
-        <Icon
-          alignSelf="center"
-          as={icon}
-          type="button"
-          fontSize="100px"
-          color="yellow"
-          {...iconProps}
-        />
-      </IconContext.Provider>
+      > */}
+      <Icon
+        paddingTop={3}
+        alignSelf="center"
+        as={icon}
+        type="button"
+        textAlign={"center"}
+        fontSize="50px"
+        color="yellow"
+        {...iconProps}
+      />
+      {/* </IconContext.Provider> */}
       <Text
         fontWeight={"bold"}
-        fontSize="20px"
+        fontSize="15px"
+        width="100px"
+        marginTop={-1}
+        textAlign={"center"}
         textColor={"black"}
         {...textProps}
       >
