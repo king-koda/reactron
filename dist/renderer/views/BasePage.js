@@ -99,6 +99,7 @@ const BasePage = ({ children }) => {
                             react_2.default.createElement(IconAndText_1.default, { icon: gr_1.GrChapterPrevious, onClick: ht
                                     ? async () => {
                                         if (hashIndex !== 0) {
+                                            setToBeDeleted([]);
                                             setHashIndex(hashIndex - 1);
                                             setPhotos(await window.electronAPI
                                                 .getPhotos(ht?.htKeys[hashIndex - 1])
@@ -114,6 +115,7 @@ const BasePage = ({ children }) => {
                             react_2.default.createElement(IconAndText_1.default, { icon: gr_1.GrChapterNext, onClick: ht
                                     ? async () => {
                                         if (ht && ht?.htKeys?.length - 1 !== hashIndex) {
+                                            setToBeDeleted([]);
                                             setHashIndex(hashIndex + 1);
                                             setPhotos(await window.electronAPI
                                                 .getPhotos(ht?.htKeys[hashIndex + 1])
@@ -164,7 +166,11 @@ const BasePage = ({ children }) => {
                                             sortPhotos?.highestSizePhoto?.value
                                             ? -14
                                             : undefined}`, src: `data:image/jpg;base64,${photo?.image}` }),
-                                react_2.default.createElement(react_1.Button, { as: gr_1.GrFormClose, width: '50px', position: 'sticky', height: '50px', margin: '1', ml: `${-12}`, zIndex: '3', onClick: () => setToBeDeleted([...toBeDeleted, ...photo?.value]) })));
+                                react_2.default.createElement(react_1.Icon, { as: gr_1.GrFormClose, width: '50px', position: 'sticky', height: '50px', margin: '1', ml: `${-12}`, zIndex: '3', onClick: () => {
+                                        if (!toBeDeleted?.includes(photo?.value)) {
+                                            setToBeDeleted([...toBeDeleted, photo?.value]);
+                                        }
+                                    } })));
                         })))))))));
 };
 exports.BasePage = BasePage;

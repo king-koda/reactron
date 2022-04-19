@@ -243,42 +243,72 @@ export const BasePage = ({ children }: FlexProps) => {
                   width='70%'
                   direction={'column'}
                 >
-                  <Flex height='80%' width='100%' justifyContent={'center'}>
+                  <Flex
+                    height='65%'
+                    justifyContent={'center'}
+                    position='fixed'
+                    right='30%'
+                    width={'70%'}
+                    padding='5'
+                  >
                     <Image
                       id='highestResImage'
-                      maxHeight='100%'
-                      maxWidth='100%'
-                      padding='5'
+                      objectFit='contain'
                       src={`data:image/jpg;base64,${focusedImage?.image}`}
                     ></Image>
                   </Flex>
                   <Flex
                     height='20%'
-                    border='solid 6px black'
-                    width={'100%'}
+                    borderTop='solid 6px black'
+                    width={'70%'}
                     top='80%'
                     direction='row'
                     align='center'
                     justifyContent={'space-evenly'}
+                    position='fixed'
                   >
-                    <Flex direction='column' width='33.3%' align={'center'}>
-                      <Text fontSize={'30px'}>Size </Text>
-                      <Text fontSize={'20px'}>
-                        {Math.ceil(focusedImage?.stats?.size / 1024)}
-                      </Text>
-                    </Flex>
-                    <Flex direction='column' width='33.3%' align={'center'}>
-                      <Text fontSize={'30px'}>Resolution </Text>
-                      <Text fontSize={'20px'}>
-                        {focusedImage?.stats?.width} x
-                        {focusedImage?.stats?.height}
-                      </Text>
-                    </Flex>
-                    <Flex direction='column' width='33.3%' align={'center'}>
-                      <Text fontSize={'30px'}>Created at </Text>
-                      <Text fontSize={'20px'}>
-                        {focusedImage?.stats?.birthtime?.toString()}
-                      </Text>
+                    <Flex
+                      direction='column'
+                      width='100%'
+                      height='100%'
+                      align={'center'}
+                    >
+                      <Flex
+                        direction='row'
+                        width='100%'
+                        align={'center'}
+                        textAlign='center'
+                        justifyContent='space-evenly'
+                        borderBottom={'6px solid black'}
+                        // paddingBottom='4'
+                        fontWeight={'bold'}
+                        height='30%'
+                      >
+                        <Text fontSize={'30px'}>Name</Text>
+                        <Text fontSize={'30px'}>Size</Text>
+                        <Text fontSize={'30px'}>Resolution</Text>
+                        <Text fontSize={'30px'}>Created at</Text>
+                      </Flex>
+                      <Flex
+                        direction='row'
+                        width='100%'
+                        align={'center'}
+                        justifyContent='space-evenly'
+                        textAlign='center'
+                        height='70%'
+                      >
+                        <Text fontSize={'20px'}>{focusedImage?.value}</Text>
+                        <Text fontSize={'20px'}>
+                          {Math.ceil(focusedImage?.stats?.size / 1024)}
+                        </Text>
+                        <Text fontSize={'20px'}>
+                          {focusedImage?.stats?.width} x
+                          {focusedImage?.stats?.height}
+                        </Text>
+                        <Text fontSize={'20px'}>
+                          {focusedImage?.stats?.birthtime?.toString()}
+                        </Text>
+                      </Flex>
                     </Flex>
                   </Flex>
                 </Flex>
@@ -288,7 +318,7 @@ export const BasePage = ({ children }: FlexProps) => {
                   width='30%'
                   height='100%'
                   borderLeft='solid 6px black'
-                  overflow='scroll'
+                  overflowY='scroll'
                 >
                   {photos &&
                     photos?.map((photo, index) => {
