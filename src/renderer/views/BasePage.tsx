@@ -231,19 +231,21 @@ export const BasePage = ({ children }: FlexProps) => {
           left='0%'
           top='15%'
           height='85%'
-          borderBottom='solid 6px black'
+          borderBottom='solid 1px black'
           id='pgbody'
         >
           <Flex width={'100%'} height={'100%'} display='flex'>
             {photos && photos?.length >= 0 && (
-              <Flex direction='row' width={'100%'}>
+              <Flex direction='row' width={'100%'}  
+                              height='100%' 
+              >
                 <Flex
-                  height='100%'
-                  id='focusedImage'
+                  height='75%'
+                  id='focusedImageFlex'
                   width='70%'
                   direction={'column'}
                 >
-                  <Flex
+                  <Flex 
                     height='65%'
                     justifyContent={'center'}
                     position='fixed'
@@ -252,14 +254,14 @@ export const BasePage = ({ children }: FlexProps) => {
                     padding='5'
                   >
                     <Image
-                      id='highestResImage'
+                      id='focusedImage'
                       objectFit='contain'
                       src={`data:image/jpg;base64,${focusedImage?.image}`}
                     ></Image>
                   </Flex>
                   <Flex
                     height='20%'
-                    borderTop='solid 6px black'
+                    borderTop='solid 1px black'
                     width={'70%'}
                     top='80%'
                     direction='row'
@@ -279,33 +281,32 @@ export const BasePage = ({ children }: FlexProps) => {
                         align={'center'}
                         textAlign='center'
                         justifyContent='space-evenly'
-                        borderBottom={'6px solid black'}
+                        borderBottom={'1px solid black'}
                         // paddingBottom='4'
                         fontWeight={'bold'}
                         height='30%'
                       >
-                        <Text fontSize={'30px'}>Name</Text>
-                        <Text fontSize={'30px'}>Size</Text>
-                        <Text fontSize={'30px'}>Resolution</Text>
-                        <Text fontSize={'30px'}>Created at</Text>
+                        <Text fontSize={'12px'} width="25%">Name</Text>
+                        <Text fontSize={'12px'} width="25%">Size</Text>
+                        <Text fontSize={'12px'} width="25%">Resolution</Text>
+                        <Text fontSize={'12px'} width="25%">Created at</Text>
                       </Flex>
                       <Flex
                         direction='row'
                         width='100%'
                         align={'center'}
-                        justifyContent='space-evenly'
                         textAlign='center'
                         height='70%'
                       >
-                        <Text fontSize={'20px'}>{focusedImage?.value}</Text>
-                        <Text fontSize={'20px'}>
+                        <Text fontSize={'12px'} width="25%">{focusedImage?.value}</Text>
+                        <Text fontSize={'12px'} width="25%">
                           {Math.ceil(focusedImage?.stats?.size / 1024)}
                         </Text>
-                        <Text fontSize={'20px'}>
+                        <Text fontSize={'12px'} width="25%">
                           {focusedImage?.stats?.width} x
                           {focusedImage?.stats?.height}
                         </Text>
-                        <Text fontSize={'20px'}>
+                        <Text fontSize={'12px'} width="25%">
                           {focusedImage?.stats?.birthtime?.toString()}
                         </Text>
                       </Flex>
@@ -317,7 +318,7 @@ export const BasePage = ({ children }: FlexProps) => {
                   direction={'column'}
                   width='30%'
                   height='100%'
-                  borderLeft='solid 6px black'
+                  borderLeft='solid 1px black'
                   overflowY='scroll'
                 >
                   {photos &&
