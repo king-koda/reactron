@@ -23,7 +23,7 @@ export const PageNavbar = ({ children, ...rest }: FlexProps) => {
       borderLeft={'solid 6px black'}
       borderRight={'solid 6px black'}
       borderTop={'solid 6px black'}
-      padding='25px'
+      // padding='25px'
       {...rest}
     >
       {children}

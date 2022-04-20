@@ -6,12 +6,12 @@ import {
   Input,
   Text,
   theme,
-} from "@chakra-ui/react";
-import React, { createRef, useEffect, useState } from "react";
-import { Views } from "../views/Views";
-import { BrowserRouter } from "react-router-dom";
-import "../styles/style.css";
-
+} from '@chakra-ui/react';
+import React, { createRef, useEffect, useState } from 'react';
+import { Views } from '../views/Views';
+import { BrowserRouter } from 'react-router-dom';
+import '../styles/style.css';
+import { ThemeProvider } from '@mui/material';
 // const { ipcRenderer } = require("electron");
 
 export const App = () => {
@@ -58,7 +58,7 @@ export const App = () => {
       <Button
         id="syncBtn"
         onClick={async () => {
-          setFile(await window.electronAPI.openFile());
+          setFile(await window.electronAPI.rootFolderSelect());
         }}
         //   // window.api.receive("fromMain", (data: any) => {
         //   //   console.log(`Received ${data} from main process`);

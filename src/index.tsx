@@ -1,19 +1,19 @@
-import { ColorModeScript } from "@chakra-ui/react";
+import { ColorModeScript } from '@chakra-ui/react';
 // import { App } from ".";
 // import reportWebVitals from "./reportWebVitals";
 // import * as serviceWorker from "./serviceWorker";
-import React from "react";
-import ReactDOM from "react-dom";
-import * as ReactDOMClient from "react-dom/client";
-import { App } from "./renderer/client/App";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
+import { App } from './renderer/client/App';
 
 declare global {
   interface Window {
     send: any;
     receive: any;
     electronAPI: {
-      openFile: () => any;
-      walkFs: () => Promise<any>;
+      rootFolderSelect: () => any;
+      walkFs: (path: string) => Promise<any>;
       getPhotos: (string) => Promise<any>;
       // getHtKeys: () => any;
     };
@@ -30,7 +30,7 @@ declare global {
 //   ipcRenderer: any;
 //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // }
-const container = document.getElementById("root");
+const container = document.getElementById('root');
 const root = container && ReactDOMClient.createRoot(container);
 
 root &&

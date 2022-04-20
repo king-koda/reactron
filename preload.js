@@ -1,19 +1,19 @@
-const { default: Logger } = require("js-logger");
+const { default: Logger } = require('js-logger');
 
 // const { ipcRenderer, contextBridge } = require("electron");
-window.ipcRenderer = require("electron").ipcRenderer;
-window.contextBridge = require("electron").contextBridge;
+window.ipcRenderer = require('electron').ipcRenderer;
+window.contextBridge = require('electron').contextBridge;
 
-window.contextBridge.exposeInMainWorld("electronAPI", {
-  openFile: () => ipcRenderer.invoke("dialog:openFile"),
-  walkFs: async () => {
+window.contextBridge.exposeInMainWorld('electronAPI', {
+  rootFolderSelect: () => ipcRenderer.invoke('dialog:rootFolderSelect'),
+  walkFs: async (path) => {
     return await ipcRenderer
-      .invoke("run:walkFs")
+      .invoke('run:walkFs', path)
       .then()
-      .catch((err) => Logger.debug("walkFs err", err));
+      .catch((err) => Logger.debug('walkFs err', err));
   },
-  getHtKeys: () => ipcRenderer.invoke("run:getHtKeys"),
-  getPhotos: (hash) => ipcRenderer.invoke("run:getPhotos", hash),
+  getHtKeys: () => ipcRenderer.invoke('run:getHtKeys'),
+  getPhotos: (hash) => ipcRenderer.invoke('run:getPhotos', hash),
 });
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // window.ipcRenderer = ipcRenderer;

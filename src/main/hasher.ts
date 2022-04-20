@@ -79,8 +79,13 @@ export function getJSONFromFile() {
   );
 }
 
-export async function walk(cache: NodeCache) {
-  const folderSignature = path.join(__dirname, '..', '..', 'test_images');
+export async function walk(cache: NodeCache, rootPath: string) {
+  const folderSignature = rootPath; //path.join(__dirname, '..', '..', 'test_images');
+
+  if (!folderSignature) {
+    return false;
+  }
+
   const files = dir.files(folderSignature, { sync: true });
 
   //TODO: handle if walk is done multiple times- check file location
@@ -120,4 +125,5 @@ export async function walk(cache: NodeCache) {
       cache.del(key);
     }
   });
+  return true;
 }

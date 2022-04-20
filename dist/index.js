@@ -42,7 +42,7 @@ const App_1 = require("./renderer/client/App");
 //   ipcRenderer: any;
 //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // }
-const container = document.getElementById("root");
+const container = document.getElementById('root');
 const root = container && ReactDOMClient.createRoot(container);
 root &&
     root.render(react_2.default.createElement(react_2.default.StrictMode, null,

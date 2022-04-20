@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.walk = exports.getJSONFromFile = exports.getStrigifiedHtKeys = exports.getFilesFromHashKey = exports.saveJSON2File = exports.findDuplicates = void 0;
-const path_1 = __importDefault(require("path"));
 const fs_1 = require("fs");
 const fs_2 = __importDefault(require("fs"));
 const node_dir_1 = __importDefault(require("node-dir"));
@@ -63,8 +62,11 @@ function getJSONFromFile() {
     return fs_2.default.readFileSync('C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json');
 }
 exports.getJSONFromFile = getJSONFromFile;
-async function walk(cache) {
-    const folderSignature = path_1.default.join(__dirname, '..', '..', 'test_images');
+async function walk(cache, rootPath) {
+    const folderSignature = rootPath; //path.join(__dirname, '..', '..', 'test_images');
+    if (!folderSignature) {
+        return false;
+    }
     const files = node_dir_1.default.files(folderSignature, { sync: true });
     //TODO: handle if walk is done multiple times- check file location
     cache.set('totalFiles', files?.length);
@@ -100,6 +102,7 @@ async function walk(cache) {
             cache.del(key);
         }
     });
+    return true;
 }
 exports.walk = walk;
 //# sourceMappingURL=hasher.js.map

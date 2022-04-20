@@ -27,8 +27,9 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.8",
-    "@emotion/react": "^11",
-    "@emotion/styled": "^11",
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "^5.6.2",
     "@react-icons/all-files": "^4.1.0",
     "@types/electron": "^1.6.10",
     "@types/filesystem": "^0.0.32",

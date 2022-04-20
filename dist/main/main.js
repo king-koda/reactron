@@ -40,13 +40,15 @@ if (isDev) {
     (0, electron_reload_1.default)(__dirname, {});
 }
 let mainWindow;
-async function handleFileOpen() {
-    const { canceled, filePaths } = await electron_1.dialog.showOpenDialog(mainWindow);
+async function rootFolderSelect() {
+    const { canceled, filePaths } = await electron_1.dialog.showOpenDialog(mainWindow, {
+        properties: ['openDirectory'],
+    });
     if (canceled) {
         return;
     }
     else {
-        // return fs.createFileStream(filePaths[0]);
+        return filePaths[0];
     }
 }
 function getMenuConfig() {
@@ -119,8 +121,8 @@ async function createWindow() {
     // Open the DevTools.
     isDev ? mainWindow.webContents.openDevTools() : null;
 }
-async function walkFs() {
-    return await (0, hasher_1.walk)(gNodeCache)
+async function walkFs(path) {
+    return await (0, hasher_1.walk)(gNodeCache, path)
         .then(() => {
         js_logger_1.default.debug('walkFs done');
         (0, hasher_1.saveJSON2File)(gNodeCache); // need to manually convert to json string because the formatting in file is fucked
@@ -148,15 +150,18 @@ electron_1.app.whenReady().then(() => {
                 .then(() => isDev ? js_logger_1.default.debug('window created on app activate') : null)
                 .catch((error) => isDev ? js_logger_1.default.debug('error on create window activate') : null);
     });
-    // ipcMain.handle("run:getHtKeys", () => gNodeCache.keys() as any);
-    electron_1.ipcMain.handle('dialog:openFile', handleFileOpen);
+    electron_1.ipcMain.handle('dialog:rootFolderSelect', async (event) => {
+        return await rootFolderSelect()
+            .then()
+            .catch((err) => console.log('root folder select error:', err));
+    });
     electron_1.ipcMain.handle('run:getPhotos', async (event, hash) => {
         return await (0, hasher_1.getFilesFromHashKey)(gNodeCache, hash)
             .then()
             .catch((err) => console.log('get files from hash error:', err));
     });
-    electron_1.ipcMain.handle('run:walkFs', async (event) => {
-        const result = await walkFs()
+    electron_1.ipcMain.handle('run:walkFs', async (event, path) => {
+        const result = await walkFs(path)
             .then((result) => result)
             .catch((err) => js_logger_1.default.debug('walkFs main error'));
         if (!!result) {

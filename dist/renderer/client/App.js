@@ -45,7 +45,7 @@ const App = () => {
       <Button
         id="syncBtn"
         onClick={async () => {
-          setFile(await window.electronAPI.openFile());
+          setFile(await window.electronAPI.rootFolderSelect());
         }}
         //   // window.api.receive("fromMain", (data: any) => {
         //   //   console.log(`Received ${data} from main process`);

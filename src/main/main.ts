@@ -22,12 +22,15 @@ if (isDev) {
 
 let mainWindow;
 
-async function handleFileOpen() {
-  const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow);
+async function rootFolderSelect() {
+  const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory'],
+  });
+
   if (canceled) {
     return;
   } else {
-    // return fs.createFileStream(filePaths[0]);
+    return filePaths[0];
   }
 }
 
@@ -107,8 +110,8 @@ async function createWindow() {
   isDev ? mainWindow.webContents.openDevTools() : null;
 }
 
-async function walkFs() {
-  return await walk(gNodeCache)
+async function walkFs(path) {
+  return await walk(gNodeCache, path)
     .then(() => {
       Logger.debug('walkFs done');
       saveJSON2File(gNodeCache); // need to manually convert to json string because the formatting in file is fucked
@@ -144,16 +147,20 @@ app.whenReady().then(() => {
         );
   });
 
-  // ipcMain.handle("run:getHtKeys", () => gNodeCache.keys() as any);
-  ipcMain.handle('dialog:openFile', handleFileOpen);
+  ipcMain.handle('dialog:rootFolderSelect', async (event) => {
+    return await rootFolderSelect()
+      .then()
+      .catch((err) => console.log('root folder select error:', err));
+  });
+
   ipcMain.handle('run:getPhotos', async (event, hash) => {
     return await getFilesFromHashKey(gNodeCache, hash)
       .then()
       .catch((err) => console.log('get files from hash error:', err));
   });
 
-  ipcMain.handle('run:walkFs', async (event) => {
-    const result = await walkFs()
+  ipcMain.handle('run:walkFs', async (event, path) => {
+    const result = await walkFs(path)
       .then((result) => result)
       .catch((err) => Logger.debug('walkFs main error'));
     if (!!result) {
