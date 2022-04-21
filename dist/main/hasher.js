@@ -1,23 +1,45 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.walk = exports.getJSONFromFile = exports.deleteDuplicates = exports.getStrigifiedHtKeys = exports.walkFs = exports.rootFolderSelect = exports.getFilesFromHashKey = exports.saveJSON2File = exports.findDuplicates = void 0;
-const fs_1 = require("fs");
-const fs_2 = __importDefault(require("fs"));
-const node_dir_1 = __importDefault(require("node-dir"));
+const electron_1 = require("electron");
+const fs_1 = __importStar(require("fs"));
+const image_size_1 = __importDefault(require("image-size"));
 const imghash_1 = __importDefault(require("imghash"));
 const js_logger_1 = __importDefault(require("js-logger"));
-const image_size_1 = __importDefault(require("image-size"));
-const electron_1 = require("electron");
+const node_dir_1 = __importDefault(require("node-dir"));
 function findDuplicates() { }
 exports.findDuplicates = findDuplicates;
 function saveJSON2File(cache) {
     const cacheKeyList = cache.keys();
     const cachedHt = cache.mget(cacheKeyList);
     js_logger_1.default.debug('cachedHt: ', cachedHt);
-    fs_2.default.writeFileSync('C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json', JSON.stringify(cachedHt, null, 2));
+    fs_1.default.writeFileSync('C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json', JSON.stringify(cachedHt, null, 2));
 }
 exports.saveJSON2File = saveJSON2File;
 async function getFilesFromHashKey(cache, hashKey) {
@@ -96,11 +118,11 @@ async function deleteDuplicates(toBeDeleted) {
 }
 exports.deleteDuplicates = deleteDuplicates;
 function getJSONFromFile() {
-    return fs_2.default.readFileSync('C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json');
+    return fs_1.default.readFileSync('C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json');
 }
 exports.getJSONFromFile = getJSONFromFile;
 async function walk(cache, rootPath) {
-    const folderSignature = rootPath; //path.join(__dirname, '..', '..', 'test_images');
+    const folderSignature = rootPath;
     if (!folderSignature) {
         return false;
     }

@@ -94,13 +94,13 @@ async function createWindow() {
             contextIsolation: true,
         },
     });
-    const window = electron_1.BrowserWindow.getFocusedWindow();
-    if (window) {
-        const [width, height] = window.getSize();
-        // mainWindow.height = height;
-        // mainWindow.width = width;
-    }
-    const menu = getMenuConfig();
+    // const window = BrowserWindow.getFocusedWindow();
+    // if (window) {
+    //   const [width, height] = window.getSize();
+    //   mainWindow.height = height;
+    //   mainWindow.width = width;
+    // }
+    // const menu = getMenuConfig();
     mainWindow.setMenu(null);
     mainWindow
         .loadURL('http://localhost:3000')

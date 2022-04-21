@@ -81,18 +81,15 @@ const BasePage = ({ children }) => {
     const markAllForDeletion = () => {
         if (photos) {
             if (!markedAll) {
-                console.log('photos', photos);
                 const filteredPhotos = photos?.filter((photo) => {
                     if ((keepHighestResolution &&
                         photo?.value === sortPhotos?.highestResPhoto?.value) ||
                         (keepHighestSize &&
                             photo?.value === sortPhotos?.highestSizePhoto?.value)) {
-                        console.log('EEEE');
                         return;
                     }
                     return photo?.value;
                 });
-                console.log('filteredPhotos', filteredPhotos);
                 setToBeDeleted(() => {
                     return filteredPhotos?.map((photo) => {
                         return photo?.value;
@@ -107,7 +104,7 @@ const BasePage = ({ children }) => {
         }
     };
     const triggerMarkAllForDeletion = (0, react_2.useMemo)(() => {
-        if (autoMarkAll)
+        if (autoMarkAll && !markedAll)
             markAllForDeletion();
     }, [photos, autoMarkAll]);
     const deleteDuplicates = async (toBeDeleted) => {
@@ -209,6 +206,7 @@ const BasePage = ({ children }) => {
             setToBeDeleted(newToBeDeleted);
         }
     };
+    console.log('markedAll', markedAll);
     return (react_2.default.createElement(PageBG_1.PageBG, { bgColor: 'blue.400' },
         react_2.default.createElement(PageNavbar_1.PageNavbar, { height: '15%', width: '100%', bgColor: 'hsla(0, 0%, 0%, 0)', justifyContent: 'space-evenly', align: 'center' },
             react_2.default.createElement(react_1.Flex, { width: '50%', direction: 'column', height: '100%', borderRight: 'solid 4px darkblue', padding: 4, justifyContent: 'space-between' },
@@ -222,53 +220,55 @@ const BasePage = ({ children }) => {
                     react_2.default.createElement(TextHeader_1.TextHeader, null, "Duplicates:"),
                     ht && (react_2.default.createElement(TextBody_1.TextBody, { paddingX: '6px', fontSize: '24px', fontWeight: 'bold' }, ht?.extra?.totalFiles)))),
             react_2.default.createElement(react_1.Flex, { width: '50%', align: 'center', direction: 'row', justifyContent: 'space-between', height: '100%' },
-                react_2.default.createElement(react_1.Flex, { direction: 'column', height: '100%', borderRight: 'solid 4px darkblue', align: 'center' },
-                    react_2.default.createElement(IconAndTextWithTooltip_1.IconAndTextWithTooltip, { tooltipProps: {
-                            id: 'select-root-folder-button',
-                            label: 'Select Root Folder',
-                        }, icon: gr_1.GrSelect, onClick: async () => {
-                            if (await rootFolderSelect()) {
-                                toast({
-                                    title: 'Success:',
-                                    description: 'Selecting Root Folder.',
-                                    status: 'success',
-                                    duration: 2000,
-                                    isClosable: true,
-                                });
-                            }
-                            else {
-                                toast({
-                                    title: 'Error:',
-                                    description: 'Selecting Root Folder.',
-                                    status: 'error',
-                                    duration: 2000,
-                                    isClosable: true,
-                                });
-                            }
-                        } }),
-                    react_2.default.createElement(IconAndTextWithTooltip_1.IconAndTextWithTooltip, { tooltipProps: {
-                            id: 'scan-for-duplicates-button',
-                            label: 'Scan for Duplicates',
-                        }, icon: gr_1.GrScan, isDisabled: !rootFolder, onClick: async () => {
-                            if (await scanForDuplicates()) {
-                                toast({
-                                    title: 'Success:',
-                                    description: 'Scanning for Duplicates.',
-                                    status: 'success',
-                                    duration: 2000,
-                                    isClosable: true,
-                                });
-                            }
-                            else {
-                                toast({
-                                    title: 'Error:',
-                                    description: 'Scanning for Duplicates.',
-                                    status: 'error',
-                                    duration: 2000,
-                                    isClosable: true,
-                                });
-                            }
-                        } })),
+                react_2.default.createElement(react_1.Flex, { direction: 'column', height: '100%', borderRight: 'solid 4px darkblue' },
+                    react_2.default.createElement(react_1.Flex, { direction: 'row', height: '50%' },
+                        react_2.default.createElement(IconAndTextWithTooltip_1.IconAndTextWithTooltip, { tooltipProps: {
+                                id: 'select-root-folder-button',
+                                label: 'Select Root Folder',
+                            }, icon: gr_1.GrSelect, onClick: async () => {
+                                if (await rootFolderSelect()) {
+                                    toast({
+                                        title: 'Success:',
+                                        description: 'Selecting Root Folder.',
+                                        status: 'success',
+                                        duration: 2000,
+                                        isClosable: true,
+                                    });
+                                }
+                                else {
+                                    toast({
+                                        title: 'Error:',
+                                        description: 'Selecting Root Folder.',
+                                        status: 'error',
+                                        duration: 2000,
+                                        isClosable: true,
+                                    });
+                                }
+                            } })),
+                    react_2.default.createElement(react_1.Flex, { direction: 'row', height: '50%' },
+                        react_2.default.createElement(IconAndTextWithTooltip_1.IconAndTextWithTooltip, { tooltipProps: {
+                                id: 'scan-for-duplicates-button',
+                                label: 'Scan for Duplicates',
+                            }, icon: gr_1.GrScan, isDisabled: !rootFolder, onClick: async () => {
+                                if (await scanForDuplicates()) {
+                                    toast({
+                                        title: 'Success:',
+                                        description: 'Scanning for Duplicates.',
+                                        status: 'success',
+                                        duration: 2000,
+                                        isClosable: true,
+                                    });
+                                }
+                                else {
+                                    toast({
+                                        title: 'Error:',
+                                        description: 'Scanning for Duplicates.',
+                                        status: 'error',
+                                        duration: 2000,
+                                        isClosable: true,
+                                    });
+                                }
+                            } }))),
                 react_2.default.createElement(react_1.Flex, { id: 'settings', direction: 'column', height: '100%', width: '100%' },
                     react_2.default.createElement(react_1.Flex, { direction: 'row', width: '100%', borderBottom: 'solid 4px darkblue', height: '30%', align: 'center', justifyContent: 'center' },
                         react_2.default.createElement(react_1.Text, { height: '100%', fontSize: '30px', alignSelf: 'center', fontWeight: 'black' }, "Config")),

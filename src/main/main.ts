@@ -9,7 +9,7 @@ import {
   getFilesFromHashKey,
   rootFolderSelect,
   walkFs,
-} from './hasher';
+} from '../../dist/main/hasher';
 
 const isDev = true;
 const gNodeCache = new NodeCache();

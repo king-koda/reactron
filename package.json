@@ -1,7 +1,7 @@
 {
   "name": "reactron",
   "version": "1.0.0",
-  "description": "Photo manager",
+  "description": "Photo Duplication Manager",
   "main": "src/main/main.ts",
   "private": true,
   "scripts": {
@@ -10,26 +10,25 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron-start": "yarn build && electron ./dist/main/main.js",
-    "start": "concurrently --kill-others \"yarn react-start\" \"yarn electron-start\""
+    "start": "concurrently --kill-others \"yarn react-start\" \"yarn electron-start\"",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\"",
+    "efstart": "electron-forge start"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/king-koda/reactron",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Photo",
+    "Duplication"
   ],
-  "author": "GitHub",
+  "author": "Christian Radei",
   "license": "CC0-1.0",
-  "devDependencies": {
-    "electron": "^18.0.3"
-  },
   "dependencies": {
     "@chakra-ui/react": "^1.8.8",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
-    "@mui/material": "^5.6.2",
     "@react-icons/all-files": "^4.1.0",
     "@types/electron": "^1.6.10",
     "@types/filesystem": "^0.0.32",
@@ -38,10 +37,8 @@
     "@types/react": "^18.0.3",
     "@types/react-dom": "^18.0.0",
     "concurrently": "^7.1.0",
-    "electron-reload": "^2.0.0-alpha.1",
     "file-type": "^17.1.1",
     "framer-motion": "3.10.6",
-    "image-hash": "^5.0.2",
     "image-size": "^1.0.1",
     "imghash": "^0.0.9",
     "js-logger": "^1.6.1",
@@ -53,10 +50,19 @@
     "react-icons": "^4.3.1",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "^5.0.0",
     "tsc": "^2.0.4",
     "typescript": "^4.6.2",
-    "typesync": "^0.9.0"
+    "electron-squirrel-startup": "^1.0.0"
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.0",
+    "electron-reload": "^2.0.0-alpha.1",
+    "@electron-forge/cli": "^6.0.0-beta.63",
+    "@electron-forge/maker-deb": "^6.0.0-beta.63",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+    "@electron-forge/maker-zip": "^6.0.0-beta.63",
+    "electron": "18.1.0"
   },
   "browserslist": {
     "production": [

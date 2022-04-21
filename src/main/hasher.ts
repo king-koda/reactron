@@ -1,16 +1,10 @@
-import { fileTypeFromFile } from 'file-type';
-import path from 'path';
-import { promises } from 'fs';
-import fs from 'fs';
-import dir from 'node-dir';
-import cloneDeep from 'lodash';
-import cache from 'node-cache';
-import imgHash from 'imghash';
-import { json } from 'stream/consumers';
-import NodeCache from 'node-cache';
-import Logger from 'js-logger';
-import sizeOf from 'image-size';
 import { dialog } from 'electron';
+import fs, { promises } from 'fs';
+import sizeOf from 'image-size';
+import imgHash from 'imghash';
+import Logger from 'js-logger';
+import NodeCache from 'node-cache';
+import dir from 'node-dir';
 export function findDuplicates() {}
 
 export function saveJSON2File(cache: NodeCache) {
@@ -119,7 +113,7 @@ export function getJSONFromFile() {
 }
 
 export async function walk(cache: NodeCache, rootPath: string) {
-  const folderSignature = rootPath; //path.join(__dirname, '..', '..', 'test_images');
+  const folderSignature = rootPath;
 
   if (!folderSignature) {
     return false;

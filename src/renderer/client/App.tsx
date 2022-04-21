@@ -11,7 +11,6 @@ import React, { createRef, useEffect, useState } from 'react';
 import { Views } from '../views/Views';
 import { BrowserRouter } from 'react-router-dom';
 import '../styles/style.css';
-import { ThemeProvider } from '@mui/material';
 // const { ipcRenderer } = require("electron");
 
 export const App = () => {
