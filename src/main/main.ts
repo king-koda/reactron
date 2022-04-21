@@ -1,16 +1,15 @@
 // Modules to control application life and create native browser window
-import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron';
-import * as path from 'path';
-import * as fs from 'fs';
+import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import electronReload from 'electron-reload';
-import {
-  getFilesFromHashKey,
-  getStrigifiedHtKeys,
-  saveJSON2File,
-  walk,
-} from './hasher';
-import NodeCache from 'node-cache';
 import Logger from 'js-logger';
+import NodeCache from 'node-cache';
+import * as path from 'path';
+import {
+  deleteDuplicates,
+  getFilesFromHashKey,
+  rootFolderSelect,
+  walkFs,
+} from './hasher';
 
 const isDev = true;
 const gNodeCache = new NodeCache();
@@ -20,61 +19,49 @@ if (isDev) {
   electronReload(__dirname, {});
 }
 
-let mainWindow;
-
-async function rootFolderSelect() {
-  const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-    properties: ['openDirectory'],
-  });
-
-  if (canceled) {
-    return;
-  } else {
-    return filePaths[0];
-  }
-}
+let mainWindow: BrowserWindow;
 
 function getMenuConfig() {
   return Menu.buildFromTemplate([
-    {
-      label: 'File',
-      submenu: [
-        {
-          click: () => mainWindow.webContents.send('update-counter', 1),
-          label: 'Increment',
-        },
-        {
-          click: () => mainWindow.webContents.send('update-counter', -1),
-          label: 'Decrement',
-        },
-      ],
-    },
-    {
-      label: 'Edit',
-      submenu: [
-        {
-          click: () => mainWindow.webContents.send('update-counter', 1),
-          label: 'Increment',
-        },
-        {
-          click: () => mainWindow.webContents.send('update-counter', -1),
-          label: 'Decrement',
-        },
-      ],
-    },
-    {
-      label: 'Preferences',
-      submenu: [
-        {
-          click: () => mainWindow.webContents.send('update-counter', 1),
-          label: 'Increment',
-        },
-        {
-          click: () => mainWindow.webContents.send('update-counter', -1),
-          label: 'Decrement',
-        },
-      ],
-    },
+    // {
+    //   label: 'File',
+    //   submenu: [
+    //     {
+    //       click: () => mainWindow.webContents.send('update-counter', 1),
+    //       label: 'Increment',
+    //     },
+    //     {
+    //       click: () => mainWindow.webContents.send('update-counter', -1),
+    //       label: 'Decrement',
+    //     },
+    //   ],
+    // },
+    // {
+    //   label: 'Edit',
+    //   submenu: [
+    //     {
+    //       click: () => mainWindow.webContents.send('update-counter', 1),
+    //       label: 'Increment',
+    //     },
+    //     {
+    //       click: () => mainWindow.webContents.send('update-counter', -1),
+    //       label: 'Decrement',
+    //     },
+    //   ],
+    // },
+    // {
+    //   label: 'Preferences',
+    //   submenu: [
+    //     {
+    //       click: () => mainWindow.webContents.send('update-counter', 1),
+    //       label: 'Increment',
+    //     },
+    //     {
+    //       click: () => mainWindow.webContents.send('update-counter', -1),
+    //       label: 'Decrement',
+    //     },
+    //   ],
+    // },
   ]);
 }
 
@@ -90,16 +77,17 @@ async function createWindow() {
     },
   });
 
-  const window = BrowserWindow.getFocusedWindow();
+  // const window = BrowserWindow.getFocusedWindow();
 
-  if (window) {
-    const [width, height] = window.getSize();
-    mainWindow.height = height;
-    mainWindow.width = width;
-  }
+  // if (window) {
+  //   const [width, height] = window.getSize();
+  //   mainWindow.height = height;
+  //   mainWindow.width = width;
+  // }
 
-  const menu = getMenuConfig();
+  // const menu = getMenuConfig();
 
+  mainWindow.setMenu(null);
   mainWindow
     .loadURL('http://localhost:3000')
     .catch((error) => Logger.debug('main window load url error', error));
@@ -110,22 +98,10 @@ async function createWindow() {
   isDev ? mainWindow.webContents.openDevTools() : null;
 }
 
-async function walkFs(path) {
-  return await walk(gNodeCache, path)
-    .then(() => {
-      Logger.debug('walkFs done');
-      saveJSON2File(gNodeCache); // need to manually convert to json string because the formatting in file is fucked
-    })
-    .then(() => getStrigifiedHtKeys(gNodeCache))
-    .catch((err) => {
-      Logger.debug('walkFs error', err);
-    });
-}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  console.log('app ready');
   createWindow()
     .then(() => {
       isDev ? Logger.debug('initial window created') : null;
@@ -148,7 +124,7 @@ app.whenReady().then(() => {
   });
 
   ipcMain.handle('dialog:rootFolderSelect', async (event) => {
-    return await rootFolderSelect()
+    return await rootFolderSelect(mainWindow)
       .then()
       .catch((err) => console.log('root folder select error:', err));
   });
@@ -160,7 +136,7 @@ app.whenReady().then(() => {
   });
 
   ipcMain.handle('run:walkFs', async (event, path) => {
-    const result = await walkFs(path)
+    const result = await walkFs(gNodeCache, path)
       .then((result) => result)
       .catch((err) => Logger.debug('walkFs main error'));
     if (!!result) {
@@ -169,45 +145,15 @@ app.whenReady().then(() => {
     return false;
   });
 
-  // ipcMain.on("deeznutz", (event, arg) => {
-  //   mainWindow.webContents.send("deeznutz", "hi");
-  //   // event.sender.send("deeznutz", "hi");
-  //   mainWindow.send("deeznutz", "hi");
-  //   mainWindow.webContents.send("hello");
-  // });
+  ipcMain.handle('run:deleteDuplicates', async (event, toBeDeleted) => {
+    const result = await deleteDuplicates(toBeDeleted)
+      .then((result) => result)
+      .catch((err) => Logger.debug('deleteDuplicates error'));
 
-  // ipcMain.on("asynchronous-message", (event, arg) => {
-  //   event.sender.send("asynReply", "Hi, asyn reply");
-  //   // event.returnValue = "Hi, sync reply";
-  // });
-
-  // ipcMain.on("synMessage", (event, args) => {
-  //   console.log(args);
-  //   event.returnValue = "Main said I received your Sync message";
-  // });
-
-  // ipcMain.on("aSynMessage", (event, args) => {
-  //   console.log(args);
-  //   event.sender.send("asynReply", "Main said: Async message received");
-  // });
-
-  // const { PathLike, ReadStream } = require("original-fs");
-
-  // type fsArgs = {
-  //   command: fsCommands;
-  //   path: PathLike;
-  // };
-  // type fsCommands = "GET_FILE";
-
-  // ipcMain.on("fs", (event, args: fsArgs) => {
-  //   console.log("args", args);
-  //   if (args.command === "GET_FILE") {
-  //     const { createReadStream } = require("fs");
-
-  //     const readStream: ReadStream = createReadStream(path);
-  //     event.sender.send("fsReply", readStream.pipe());
-  //   }
-  // });
+    if (!!result) {
+      return result;
+    }
+  });
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -216,10 +162,3 @@ app.whenReady().then(() => {
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit();
 });
-
-// ipcMain.on("invokeAction", (event, args) => {
-//   var result = "test result!";
-//   mainWindow.webContents.send("fromMain", console.log("efsefesfefsw"));
-// });
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

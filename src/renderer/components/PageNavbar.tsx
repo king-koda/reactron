@@ -16,13 +16,13 @@ export const PageNavbar = ({ children, ...rest }: FlexProps) => {
       width={'100%'}
       //top="calc(20%)"
       bgColor='rgba(0, 0, 0, 0.0)'
-      zIndex={4}
-      fill='white'
+      zIndex={3}
+      // fill='white'
       position={'fixed'}
-      borderBottom={'solid 6px black'}
-      borderLeft={'solid 6px black'}
-      borderRight={'solid 6px black'}
-      borderTop={'solid 6px black'}
+      borderBottom={'solid 4px darkblue'}
+      borderLeft={'solid 4px darkblue'}
+      borderRight={'solid 4px darkblue'}
+      borderTop={'solid 4px darkblue'}
       // padding='25px'
       {...rest}
     >

@@ -1,43 +1,34 @@
 import {
-  Button,
-  ButtonGroup,
+  Checkbox,
   Flex,
   FlexProps,
   Icon,
   Image,
-  Tooltip,
   Text,
-  Checkbox,
+  useToast,
 } from '@chakra-ui/react';
 import Logger from 'js-logger';
-import React, { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { IconContext } from 'react-icons';
+import { cloneDeep, filter } from 'lodash';
+import React, { useMemo, useState } from 'react';
+import { BsTrash } from 'react-icons/bs';
 import {
-  BsArrowLeftCircleFill,
-  BsArrowRightCircleFill,
-  BsTrash,
-} from 'react-icons/bs';
-import {
-  GrSelect,
-  GrScan,
-  GrCaretPrevious,
-  GrCaretNext,
+  GrAchievement,
+  GrAction,
   GrChapterNext,
   GrChapterPrevious,
-  GrAchievement,
-  GrContract,
   GrFormClose,
-  GrAction,
-  GrTrash,
+  GrScan,
+  GrSelect,
+  GrUndo,
 } from 'react-icons/gr';
-import IconAndText from '../components/icons/IconAndText';
-import NextFolderIcon from '../components/icons/NextFolderIcon';
-import PreviousFolderIcon from '../components/icons/PreviousFolderIcon';
+import { MdSelectAll } from 'react-icons/md';
+import { IconAndTextWithTooltip } from '../components/IconAndTextWithTooltip';
 import { PageBG } from '../components/PageBG';
 import { PageBody } from '../components/PageBody';
 import { PageNavbar } from '../components/PageNavbar';
-import { PageSidebar } from '../components/PageSidebar';
+import { TextBody } from '../components/TextBody';
+import { TextHeader } from '../components/TextHeader';
+import { TextWithTooltip } from '../components/TextWithTooltip';
 
 type HashTableReturn = {
   htKeys: string[];
@@ -74,15 +65,33 @@ type Photo = {
 
 export const BasePage = ({ children }: FlexProps) => {
   const [hashIndex, setHashIndex] = useState<number>(0);
+
+  //marked for deletion list
   const [toBeDeleted, setToBeDeleted] = useState<string[]>([]);
 
+  //hashes and their file locations
   const [ht, setHt] = useState<HashTableReturn | undefined>(undefined);
+  //photos and their info
   const [photos, setPhotos] = useState<Photo[] | undefined>(undefined);
+
   const [rootFolder, setRootFolder] = useState<string>('');
 
+  //checkboxes
+  const [keepHighestResolution, setKeepHighestResolution] =
+    useState<boolean>(false);
+  const [keepHighestSize, setKeepHighestSize] = useState<boolean>(false);
+  const [autoMarkAll, setAutoMarkAll] = useState<boolean>(false);
+  const [autoDeleteOnFolderChange, setAutoDeleteOnFolderChange] =
+    useState<boolean>(false);
+
+  const [markedAll, setMarkedAll] = useState<boolean>(false);
+
+  //main image preview
   const [focusedImage, setFocusedImage] = useState<Photo | undefined>(
     undefined
   );
+
+  const toast = useToast();
 
   const sortPhotos = useMemo(() => {
     if (photos) {
@@ -108,207 +117,498 @@ export const BasePage = ({ children }: FlexProps) => {
     }
   }, [photos]);
 
-  console.log('ht 0', ht);
-  console.log('photos', photos);
-  console.log('rootFolderrootFolder', rootFolder);
-  console.log('toBeDeleted', toBeDeleted);
-  console.log(
-    'adwadawd',
-    document?.getElementById('current-hash')?.clientWidth
-  );
-  console.log('photos flat', photos?.flat());
+  const markAllForDeletion = () => {
+    if (photos) {
+      if (!markedAll) {
+        const filteredPhotos = photos?.filter((photo) => {
+          if (
+            (keepHighestResolution &&
+              photo?.value === sortPhotos?.highestResPhoto?.value) ||
+            (keepHighestSize &&
+              photo?.value === sortPhotos?.highestSizePhoto?.value)
+          ) {
+            return;
+          }
+          return photo?.value;
+        });
+
+        setToBeDeleted(() => {
+          return filteredPhotos?.map((photo) => {
+            return photo?.value;
+          });
+        });
+
+        setMarkedAll(true);
+      }
+
+      if (markedAll) {
+        setToBeDeleted([]);
+        setMarkedAll(false);
+      }
+    }
+  };
+
+  const triggerMarkAllForDeletion = useMemo(() => {
+    if (autoMarkAll && !markedAll) markAllForDeletion();
+  }, [photos, autoMarkAll]);
+
+  const deleteDuplicates = async (toBeDeleted: string[]) => {
+    return await window.electronAPI
+      .deleteDuplicates(toBeDeleted)
+      .then(async (result) => {
+        console.log('files deleted:', result);
+      })
+      .catch((err) => console.error('fuck button error: ', err));
+  };
+
+  const nextDuplicate = async () => {
+    if (ht && ht?.htKeys?.length - 1 !== hashIndex) {
+      if (autoDeleteOnFolderChange) await deleteDuplicates(toBeDeleted);
+      setToBeDeleted([]);
+      setHashIndex(hashIndex + 1);
+      const newPhotoSet = await window.electronAPI
+        .getPhotos(ht?.htKeys[hashIndex + 1])
+        .then()
+        .catch((err) => console.error('next duplicate get error:', err));
+      setMarkedAll(false);
+      setPhotos(newPhotoSet);
+      return true;
+    }
+    return false;
+  };
+
+  const previousDuplicate = async () => {
+    if (hashIndex !== 0) {
+      if (autoDeleteOnFolderChange) await deleteDuplicates(toBeDeleted);
+      setToBeDeleted([]);
+      setHashIndex(hashIndex - 1);
+
+      const newPhotoSet = await window.electronAPI
+        .getPhotos(ht?.htKeys[hashIndex - 1])
+        .then()
+        .catch((err) => console.error('prev duplicate get error:', err));
+      setMarkedAll(false);
+      setPhotos(newPhotoSet);
+      return true;
+    }
+    return false;
+  };
+
+  const toggleKeepHighestSize = () => {
+    if (toBeDeleted?.includes(sortPhotos?.highestSizePhoto?.value)) {
+      let oldToBeDeleted = cloneDeep(toBeDeleted);
+      let newToBeDeleted = oldToBeDeleted?.filter((tbd) => {
+        return !(tbd === sortPhotos?.highestSizePhoto?.value);
+      });
+      setToBeDeleted(newToBeDeleted);
+    }
+    setKeepHighestSize(!keepHighestSize);
+    return true;
+  };
+
+  const toggleKeepHighestResolution = () => {
+    if (toBeDeleted?.includes(sortPhotos?.highestResPhoto?.value)) {
+      let oldToBeDeleted = cloneDeep(toBeDeleted);
+      let newToBeDeleted = oldToBeDeleted?.filter((tbd) => {
+        return !(tbd === sortPhotos?.highestResPhoto?.value);
+      });
+      setToBeDeleted(newToBeDeleted);
+    }
+    setKeepHighestResolution(!keepHighestResolution);
+    return true;
+  };
+
+  const scanForDuplicates = async () => {
+    return await window.electronAPI
+      .walkFs(rootFolder)
+      .then(async (result) => {
+        const jsonParsedResult = JSON.parse(result);
+        const htResult = jsonParsedResult;
+        setHt(jsonParsedResult);
+        setHashIndex(0);
+        setPhotos(
+          await window.electronAPI
+            .getPhotos(htResult?.htKeys?.[0])
+            .then()
+            .catch((err) => console.error('prev duplicate get error:', err))
+        );
+        return result;
+      })
+      .catch((err) => Logger.debug('fuck button error: ', err));
+  };
+
+  const rootFolderSelect = async () => {
+    return await window.electronAPI
+      .rootFolderSelect()
+      .then((result) => {
+        setRootFolder(result);
+        return true;
+      })
+      .catch((err) => console.error('prev duplicate get error:', err));
+  };
+
+  const markForDeletion = (photo: Photo) => {
+    if (!toBeDeleted?.includes(photo?.value)) {
+      setToBeDeleted([...toBeDeleted, photo?.value]);
+    } else {
+      let oldToBeDeleted = cloneDeep(toBeDeleted);
+      const newToBeDeleted = filter(oldToBeDeleted, (path: string) => {
+        return !(path === photo?.value);
+      });
+
+      setToBeDeleted(newToBeDeleted);
+    }
+  };
+
+  console.log('markedAll', markedAll);
   return (
-    <PageBG bgColor={'#B0E0E6'} width='100%' height='100%'>
-      <PageNavbar height='15%' width='100%' bgColor='rgba(0, 0, 0, 0.0)'>
-        <Flex justifyContent={'space-evenly'} width={'100%'} align='center'>
-          <Flex
-            width='50%'
-            direction={'column'}
-            height='100%'
-            borderRight='solid 6px black'
-            padding={4}
-            justifyContent='space-between'
-          >
-            <Flex width='100%' direction='row'>
-              <Text
+    <PageBG bgColor='blue.400'>
+      <PageNavbar
+        height='15%'
+        width='100%'
+        bgColor='hsla(0, 0%, 0%, 0)'
+        justifyContent={'space-evenly'}
+        align='center'
+      >
+        <Flex
+          width='50%'
+          direction={'column'}
+          height='100%'
+          borderRight='solid 4px darkblue'
+          padding={4}
+          justifyContent='space-between'
+        >
+          <Flex width='100%' direction='row' align='center'>
+            <TextHeader>Root Folder:</TextHeader>
+            {rootFolder && (
+              <TextWithTooltip
+                tooltipProps={{ label: rootFolder }}
+                fontSize='24px'
                 fontWeight={'bold'}
-                fontSize='20px'
-                whiteSpace={'nowrap'}
-                minWidth='30%'
+                paddingX='6px'
               >
-                Root Folder:
-              </Text>
-              {rootFolder && (
-                <Tooltip label={rootFolder} placement='top'>
-                  <Text
-                    fontSize='20px'
-                    fontWeight={'bold'}
-                    paddingX='6px'
-                    textOverflow={'ellipsis'}
-                    overflow={'hidden'}
-                    whiteSpace={'nowrap'}
-                    width={'100%'}
-                  >
-                    {rootFolder}
-                  </Text>
-                </Tooltip>
-              )}
-            </Flex>
-            <Flex id='current-hash' width='100%' direction='row'>
-              <Text
+                {rootFolder}
+              </TextWithTooltip>
+            )}
+          </Flex>
+          <Flex id='current-hash' width='100%' direction='row' align='center'>
+            <TextHeader>Hash:</TextHeader>
+            {ht && (
+              <TextWithTooltip
+                paddingX='6px'
                 fontWeight={'bold'}
-                fontSize='20px'
-                whiteSpace={'nowrap'}
-                minWidth='30%'
+                fontSize='24px'
+                tooltipProps={{ label: ht?.htKeys[hashIndex] }}
               >
-                Hash:
-              </Text>
-              {ht && (
-                <Tooltip label={ht?.htKeys[hashIndex]} placement='top'>
-                  <Text
-                    fontSize='20px'
-                    fontWeight={'bold'}
-                    paddingX='6px'
-                    textOverflow={'ellipsis'}
-                    overflow={'hidden'}
-                    width={'100%'}
-                    whiteSpace={'nowrap'}
-                  >
-                    {ht?.htKeys[hashIndex]}
-                  </Text>
-                </Tooltip>
-              )}
-            </Flex>
-            <Flex width='100%' direction='row'>
-              <Text
-                fontWeight={'bold'}
-                fontSize='20px'
-                whiteSpace={'nowrap'}
-                minWidth='30%'
-              >
-                Duplicates:
-              </Text>
-              {ht && (
-                <Text
-                  fontSize='20px'
-                  fontWeight={'bold'}
-                  paddingX='6px'
-                  width='auto'
-                >
-                  {ht?.extra?.totalFiles}
-                </Text>
-              )}
-            </Flex>
+                {ht?.htKeys[hashIndex]}
+              </TextWithTooltip>
+            )}
           </Flex>
           <Flex
-            width='50%'
-            align='left'
-            direction={'row'}
-            justifyContent='space-between'
+            id='duplicate-info-flex'
+            width='100%'
+            direction='row'
+            align='center'
           >
-            <Flex>
-              <IconAndText
-                icon={GrSelect}
-                text='Select Root Folder'
-                onClick={async () =>
-                  await window.electronAPI
-                    .rootFolderSelect()
-                    .then((result) => setRootFolder(result))
-                    .catch((err) =>
-                      console.log('prev duplicate get error:', err)
-                    )
-                }
-              />
-
-              <IconAndText
-                icon={GrScan}
-                text='Scan for Duplicates'
-                onClick={async () => {
-                  await window.electronAPI
-                    .walkFs(rootFolder)
-                    .then(async (result) => {
-                      console.log('walkFs FE result:', result);
-                      const jsonParsedResult = JSON.parse(result);
-                      const htResult = jsonParsedResult;
-                      setHt(jsonParsedResult);
-                      setHashIndex(0);
-                      setPhotos(
-                        await window.electronAPI
-                          .getPhotos(htResult?.htKeys?.[0])
-                          .then()
-                          .catch((err) =>
-                            console.log('prev duplicate get error:', err)
-                          )
-                      );
-                    })
-                    .catch((err) => Logger.debug('fuck button error: ', err));
+            <TextHeader>Duplicates:</TextHeader>
+            {ht && (
+              <TextBody paddingX='6px' fontSize={'24px'} fontWeight='bold'>
+                {ht?.extra?.totalFiles}
+              </TextBody>
+            )}
+          </Flex>
+        </Flex>
+        <Flex
+          width='50%'
+          align='center'
+          direction={'row'}
+          justifyContent='space-between'
+          height='100%'
+        >
+          <Flex
+            direction={'column'}
+            height='100%'
+            borderRight='solid 4px darkblue'
+          >
+            <Flex direction={'row'} height='50%'>
+              <IconAndTextWithTooltip
+                tooltipProps={{
+                  id: 'select-root-folder-button',
+                  label: 'Select Root Folder',
                 }}
-              />
-            </Flex>
-            <Flex id='settings' direction={'column'}>
-              <Text fontWeight={'bold'}>Mark all for Deletion EXCEPT: </Text>
-              <Checkbox iconSize={'1rem'}>Highest Resolution</Checkbox>
-              <Checkbox iconSize={'1rem'}>Highest Size</Checkbox>
-            </Flex>
-            <Flex>
-              <IconAndText
-                icon={BsTrash}
-                iconProps={{ color: 'red' }}
-                onClick={() => {
-                  if (photos) {
-                    setToBeDeleted(() => photos?.map((photo) => photo?.value));
+                icon={GrSelect}
+                onClick={async () => {
+                  if (await rootFolderSelect()) {
+                    toast({
+                      title: 'Success:',
+                      description: 'Selecting Root Folder.',
+                      status: 'success',
+                      duration: 2000,
+                      isClosable: true,
+                    });
+                  } else {
+                    toast({
+                      title: 'Error:',
+                      description: 'Selecting Root Folder.',
+                      status: 'error',
+                      duration: 2000,
+                      isClosable: true,
+                    });
                   }
                 }}
-                text='Mark all for Deletion'
               />
+            </Flex>
+            <Flex direction={'row'} height='50%'>
+              <IconAndTextWithTooltip
+                tooltipProps={{
+                  id: 'scan-for-duplicates-button',
+                  label: 'Scan for Duplicates',
+                }}
+                icon={GrScan}
+                isDisabled={!rootFolder}
+                onClick={async () => {
+                  if (await scanForDuplicates()) {
+                    toast({
+                      title: 'Success:',
+                      description: 'Scanning for Duplicates.',
+                      status: 'success',
+                      duration: 2000,
+                      isClosable: true,
+                    });
+                  } else {
+                    toast({
+                      title: 'Error:',
+                      description: 'Scanning for Duplicates.',
+                      status: 'error',
+                      duration: 2000,
+                      isClosable: true,
+                    });
+                  }
+                }}
+              />
+            </Flex>
+          </Flex>
+          <Flex id='settings' direction={'column'} height='100%' width='100%'>
+            <Flex
+              direction='row'
+              width='100%'
+              borderBottom='solid 4px darkblue'
+              height='30%'
+              align='center'
+              justifyContent={'center'}
+            >
+              <Text
+                height='100%'
+                fontSize='30px'
+                alignSelf={'center'}
+                fontWeight={'black'}
+              >
+                Config
+              </Text>
+            </Flex>
 
-              <IconAndText
-                icon={GrChapterPrevious}
-                onClick={
-                  ht
-                    ? async () => {
-                        if (hashIndex !== 0) {
-                          setToBeDeleted([]);
-                          setHashIndex(hashIndex - 1);
-                          setPhotos(
-                            await window.electronAPI
-                              .getPhotos(ht?.htKeys[hashIndex - 1])
-                              .then()
-                              .catch((err) =>
-                                console.log('prev duplicate get error:', err)
-                              )
-                          );
-                        } else {
-                          alert('Already at the first duplicate!');
-                        }
-                      }
-                    : () => {}
-                }
-                text='Previous Duplicate'
+            <Flex direction='column' height='70%' width='100%' overflow='auto'>
+              <Flex>
+                <Icon
+                  height='30px'
+                  width='30px'
+                  as={MdSelectAll}
+                  paddingX={1}
+                ></Icon>
+                <Text fontSize='20px' fontWeight={'bold'}>
+                  Mark all for Deletion Options:
+                </Text>
+              </Flex>
+
+              <Checkbox
+                fontSize='18px'
+                paddingX={1}
+                isChecked={keepHighestResolution}
+                onChange={() => {
+                  toggleKeepHighestResolution();
+                  if (!keepHighestResolution) {
+                    toast({
+                      title: 'Success:',
+                      description: 'Keep Highest Resolution Toggled ON.',
+                      status: 'success',
+                      duration: 2000,
+                      isClosable: true,
+                    });
+                  }
+                  if (keepHighestResolution) {
+                    toast({
+                      title: 'Warning:',
+                      description: 'Keep Highest Resolution Toggled OFF.',
+                      status: 'warning',
+                      duration: 2000,
+                      isClosable: true,
+                    });
+                  }
+                }}
+              >
+                <Text fontSize='18px'>Keep Highest Resolution Photo</Text>
+              </Checkbox>
+              <Checkbox
+                paddingX={1}
+                isChecked={keepHighestSize}
+                onChange={() => {
+                  if (toggleKeepHighestSize()) {
+                    if (!keepHighestSize) {
+                      toast({
+                        title: 'Success:',
+                        description: 'Keep Highest Size Toggled ON.',
+                        status: 'success',
+                        duration: 2000,
+                        isClosable: true,
+                      });
+                    }
+                    if (keepHighestSize) {
+                      toast({
+                        title: 'Warning:',
+                        description: 'Keep Highest Size Toggled OFF.',
+                        status: 'warning',
+                        duration: 2000,
+                        isClosable: true,
+                      });
+                    }
+                  }
+                }}
+              >
+                <Text fontSize='18px'>Keep Highest Size Photo</Text>
+              </Checkbox>
+              <Checkbox
+                fontSize='18px'
+                paddingX={1}
+                isChecked={autoMarkAll}
+                onChange={() => {
+                  if (!autoMarkAll)
+                    alert(
+                      'WARNING: Pressing Next/ Previous will now automatically mark all photos for DELETION that match the config!'
+                    );
+                  setAutoMarkAll(!autoMarkAll);
+                  if (!autoMarkAll) {
+                    toast({
+                      title: 'Success:',
+                      description: 'Auto Mark All Toggled ON.',
+                      status: 'success',
+                      duration: 2000,
+                      isClosable: true,
+                    });
+                  }
+                  if (autoMarkAll) {
+                    toast({
+                      title: 'Warning:',
+                      description: 'Auto Mark All Toggled OFF.',
+                      status: 'warning',
+                      duration: 2000,
+                      isClosable: true,
+                    });
+                  }
+                }}
+              >
+                <Text fontSize='18px'>Auto Mark All</Text>
+              </Checkbox>
+              <Checkbox
+                fontSize='18px'
+                paddingX={1}
+                isChecked={autoDeleteOnFolderChange}
+                onChange={() => {
+                  if (!autoDeleteOnFolderChange)
+                    alert(
+                      'WARNING: Pressing Next/ Previous will now automatically DELETE photos marked for DELETION!'
+                    );
+                  setAutoDeleteOnFolderChange(!autoDeleteOnFolderChange);
+                  if (!autoDeleteOnFolderChange) {
+                    toast({
+                      title: 'Success:',
+                      description:
+                        'Auto Delete Photos on Next/ Previous Toggled ON.',
+                      status: 'success',
+                      duration: 2000,
+                      isClosable: true,
+                    });
+                  }
+                  if (autoDeleteOnFolderChange) {
+                    toast({
+                      title: 'Warning:',
+                      description:
+                        'Auto Delete Photos on Next/ Previous Toggled OFF.',
+                      status: 'warning',
+                      duration: 2000,
+                      isClosable: true,
+                    });
+                  }
+                }}
+              >
+                <Text fontSize='18px'>
+                  Auto Delete Photos ON Next/ Previous
+                </Text>
+              </Checkbox>
+            </Flex>
+          </Flex>
+
+          <Flex direction={'column'} height='100%'>
+            <Flex
+              direction={'row'}
+              height='50%'
+              borderLeft='solid 4px darkblue'
+            >
+              <IconAndTextWithTooltip
+                tooltipProps={{
+                  id: 'delete-button',
+                  label: 'Delete',
+                }}
+                icon={BsTrash}
+                isDisabled={!rootFolder || !photos || toBeDeleted?.length === 0}
+                iconProps={{ color: 'red' }}
+                onClick={async () => {
+                  if (photos && toBeDeleted?.length > 0) {
+                    //TODO: send tbd to backend, then refetch files for current hash -> maybe?
+                    await deleteDuplicates(toBeDeleted);
+                  }
+                }}
               />
-              <IconAndText
+              <IconAndTextWithTooltip
+                tooltipProps={{
+                  id: 'mark-all-for-deletion-button',
+                  label: 'Mark all for Deletion',
+                }}
+                icon={markedAll ? GrUndo : MdSelectAll}
+                isDisabled={!rootFolder || !photos}
+                iconProps={{ color: 'red' }}
+                onClick={() => markAllForDeletion()}
+              />
+            </Flex>
+            <Flex
+              direction={'row'}
+              height='50%'
+              borderLeft='solid 4px darkblue'
+            >
+              <IconAndTextWithTooltip
+                tooltipProps={{
+                  id: 'previous-duplicate-button',
+                  label: 'Previous Duplicate',
+                }}
+                icon={GrChapterPrevious}
+                isDisabled={!rootFolder || !photos || hashIndex === 0}
+                onClick={async () => {
+                  if (ht) await previousDuplicate();
+                }}
+              />
+              <IconAndTextWithTooltip
+                tooltipProps={{
+                  id: 'next-duplicate-button',
+                  label: 'Next Duplicate',
+                }}
                 icon={GrChapterNext}
-                onClick={
-                  ht
-                    ? async () => {
-                        if (ht && ht?.htKeys?.length - 1 !== hashIndex) {
-                          setToBeDeleted([]);
-                          setHashIndex(hashIndex + 1);
-                          setPhotos(
-                            await window.electronAPI
-                              .getPhotos(ht?.htKeys[hashIndex + 1])
-                              .then()
-                              .catch((err) =>
-                                console.log('next duplicate get error:', err)
-                              )
-                          );
-                        } else {
-                          alert('No more duplicates!');
-                        }
-                      }
-                    : () => {}
+                isDisabled={
+                  !rootFolder ||
+                  !photos ||
+                  !(ht && ht?.htKeys?.length - 1 !== hashIndex)
                 }
-                text='Next Duplicate'
+                onClick={() => {
+                  if (ht) nextDuplicate();
+                }}
               />
             </Flex>
           </Flex>
@@ -319,19 +619,18 @@ export const BasePage = ({ children }: FlexProps) => {
         top='15%'
         width='100%'
         height='85%'
-        // height='85%'
-        borderBottom='solid 6px black'
-        borderLeft='solid 6px black'
+        borderBottom='solid 4px darkblue'
+        borderLeft='solid 4px darkblue'
         id='pg-body'
         direction='row'
       >
         {photos && photos?.length >= 0 && (
           <>
             <Flex
-              height='100%'
               id='focused-image-flex'
+              height='100%'
               width='70%'
-              borderRight='solid 4px black'
+              borderRight='solid 4px darkblue'
               direction={'column'}
             >
               <Image
@@ -340,15 +639,13 @@ export const BasePage = ({ children }: FlexProps) => {
                 id='focused-image'
                 objectFit='contain'
                 src={`data:image/jpg;base64,${focusedImage?.image}`}
-              ></Image>
+              />
               <Flex
-                id='focused-image-info'
+                id='focused-image-info-flex'
                 height='20%'
-                borderTop='solid 4px black'
+                borderTop='solid 4px darkblue'
                 width={'100%'}
                 top='80%'
-                align='center'
-                justifyContent={'space-evenly'}
                 direction='column'
               >
                 <Flex
@@ -358,23 +655,14 @@ export const BasePage = ({ children }: FlexProps) => {
                   align={'center'}
                   textAlign='center'
                   justifyContent='space-evenly'
-                  borderBottom={'4px solid black'}
-                  // paddingBottom='4'
+                  borderBottom={'4px solid darkblue'}
                   fontWeight={'bold'}
                   height='20%'
                 >
-                  <Text fontSize={'24px'} width='25%'>
-                    Location
-                  </Text>
-                  <Text fontSize={'24px'} width='25%'>
-                    Size (kB)
-                  </Text>
-                  <Text fontSize={'24px'} width='25%'>
-                    Resolution (H x W)
-                  </Text>
-                  <Text fontSize={'24px'} width='25%'>
-                    Created at
-                  </Text>
+                  <TextHeader width='25%'>Location</TextHeader>
+                  <TextHeader width='25%'>Size (kB)</TextHeader>
+                  <TextHeader width='25%'>Resolution (H x W)</TextHeader>
+                  <TextHeader width='25%'>Created at</TextHeader>
                 </Flex>
                 <Flex
                   id='focused-image-info-body'
@@ -383,19 +671,18 @@ export const BasePage = ({ children }: FlexProps) => {
                   align={'center'}
                   textAlign='center'
                   height='80%'
+                  padding='2'
                 >
-                  <Text fontSize={'24px'} width='25%'>
-                    {focusedImage?.value}
-                  </Text>
-                  <Text fontSize={'24px'} width='25%'>
+                  <TextBody width='25%'>{focusedImage?.value}</TextBody>
+                  <TextBody width='25%'>
                     {Math.ceil(focusedImage?.stats?.size / 1024)}
-                  </Text>
-                  <Text fontSize={'24px'} width='25%'>
+                  </TextBody>
+                  <TextBody width='25%'>
                     {focusedImage?.stats?.width} x {focusedImage?.stats?.height}
-                  </Text>
-                  <Text fontSize={'24px'} width='25%'>
+                  </TextBody>
+                  <TextBody width='25%'>
                     {focusedImage?.stats?.birthtime?.toString()}
-                  </Text>
+                  </TextBody>
                 </Flex>
               </Flex>
             </Flex>
@@ -405,6 +692,7 @@ export const BasePage = ({ children }: FlexProps) => {
               width='30%'
               height='100%'
               overflowY='scroll'
+              borderRight='solid 4px darkblue'
             >
               {photos?.map((photo, index) => {
                 return (
@@ -412,20 +700,25 @@ export const BasePage = ({ children }: FlexProps) => {
                     id={`preview-defocused-image-flex-${index}`}
                     minHeight='33.33%'
                     width={`100%`}
+                    borderBottom={
+                      photos?.length - 1 !== index
+                        ? 'solid 4px darkblue'
+                        : undefined
+                    }
                     border={`${
                       photo?.value === focusedImage?.value
                         ? 'solid 6px magenta'
-                        : 'solid 4px black'
+                        : undefined
                     }`}
                     direction='row'
                   >
                     <Flex
                       width='50%'
-                      id={`preview-image-flex-${index}`}
+                      id={`preview-image-flex-left-${index}`}
                       height='100%'
                     >
                       <Flex
-                        id={`overlay-${index}`}
+                        id={`preview-image-flex-overlay-${index}`}
                         position='sticky'
                         direction='column'
                         height='100%'
@@ -434,99 +727,98 @@ export const BasePage = ({ children }: FlexProps) => {
                         <Flex direction='column' position='relative'>
                           {photo?.value ===
                             sortPhotos?.highestResPhoto?.value && (
-                            <Tooltip
-                              title='high-res-icon'
-                              label='Highest Resolution'
-                              placement='top'
-                            >
-                              <span>
-                                <Icon
-                                  id={`highest-resolution-icon-${index}`}
-                                  as={GrAchievement}
-                                  width='30px'
-                                  height='30px'
-                                  margin='1'
-                                />
-                              </span>
-                            </Tooltip>
+                            <IconAndTextWithTooltip
+                              tooltipProps={{
+                                title: 'high-res-icon',
+                                label: 'Highest Resolution',
+                              }}
+                              id={`highest-resolution-icon-${index}`}
+                              icon={GrAchievement}
+                              width='30px'
+                              height='30px'
+                              iconProps={{
+                                margin: undefined,
+                                width: '30px',
+                                height: '30px',
+                              }}
+                              margin='1'
+                              isButton={false}
+                            />
                           )}
                           {photo?.value ===
                             sortPhotos?.highestSizePhoto?.value && (
-                            <Tooltip
-                              title='high-size-icon'
-                              label='Highest Size'
-                              placement='top'
-                            >
-                              <span>
-                                <Icon
-                                  id={`highest-size-icon-${index}`}
-                                  as={GrAction}
-                                  width='30px'
-                                  height='30px'
-                                  margin='1'
-                                />
-                              </span>
-                            </Tooltip>
+                            <IconAndTextWithTooltip
+                              tooltipProps={{
+                                title: 'high-size-icon',
+                                label: 'Highest Size',
+                              }}
+                              id={`highest-size-icon-${index}`}
+                              icon={GrAction}
+                              width='30px'
+                              height='30px'
+                              iconProps={{
+                                margin: undefined,
+                                width: '30px',
+                                height: '30px',
+                              }}
+                              margin='1'
+                              isButton={false}
+                            />
                           )}
                         </Flex>
                         <Flex direction='column' position='relative'>
                           {toBeDeleted?.includes(photo?.value) && (
-                            <Tooltip
-                              title='marked-for-deletion-icon'
-                              label='Marked for Deletion'
-                              placement='top'
-                            >
-                              <span>
-                                <Icon
-                                  as={BsTrash}
-                                  width='30px'
-                                  height='30px'
-                                  color='red'
-                                  // _hover={{ bgColor: 'red' }}
-                                  // _active={{ bgColor: 'yellow' }}
-                                  margin='1'
-                                  zIndex='3'
-                                  // alignSelf={'flex-end'}
-                                  onClick={() => {
-                                    if (!toBeDeleted?.includes(photo?.value)) {
-                                      setToBeDeleted([
-                                        ...toBeDeleted,
-                                        photo?.value,
-                                      ]);
-                                    }
-                                  }}
-                                />
-                              </span>
-                            </Tooltip>
+                            <IconAndTextWithTooltip
+                              tooltipProps={{
+                                title: 'marked-for-deletion-icon',
+                                label: 'Marked for Deletion',
+                              }}
+                              id={`marked-for-deletion-icon-${index}`}
+                              icon={BsTrash}
+                              width='30px'
+                              height='30px'
+                              iconProps={{
+                                margin: undefined,
+                                width: '30px',
+                                height: '30px',
+                                color: 'red',
+                              }}
+                              margin='1'
+                              isButton={false}
+                            />
                           )}
-                          <Tooltip
-                            title='single-delete-icon'
-                            label='Mark for Deletion'
-                            placement='top'
-                          >
-                            <span>
-                              <Icon
-                                as={GrFormClose}
-                                width='30px'
-                                height='30px'
-                                _hover={{ bgColor: 'red' }}
-                                _active={{ bgColor: 'yellow' }}
-                                margin='1'
-                                zIndex='3'
-                                // alignSelf={'flex-end'}
-                                onClick={() => {
-                                  if (!toBeDeleted?.includes(photo?.value)) {
-                                    setToBeDeleted([
-                                      ...toBeDeleted,
-                                      photo?.value,
-                                    ]);
-                                  } else {
-                                    //TODO: remove item from deletion list
-                                  }
-                                }}
-                              />
-                            </span>
-                          </Tooltip>
+                          <IconAndTextWithTooltip
+                            tooltipProps={{
+                              title: 'mark-for-deletion-icon',
+                              label: 'Mark for Deletion',
+                            }}
+                            id={`mark-for-deletion-icon-${index}`}
+                            icon={
+                              !toBeDeleted?.includes(photo?.value)
+                                ? GrFormClose
+                                : GrUndo
+                            }
+                            width='30px'
+                            height='30px'
+                            margin='1'
+                            _hover={undefined}
+                            _active={undefined}
+                            iconProps={{
+                              margin: undefined,
+                              width: '30px',
+                              height: '30px',
+                              _hover: !toBeDeleted?.includes(photo?.value)
+                                ? { border: 'solid 2px red' }
+                                : { border: 'solid 2px darkgreen' },
+                              zIndex: '3',
+                              _active: !toBeDeleted?.includes(photo?.value)
+                                ? { bgColor: 'orangered' }
+                                : { bgColor: 'lightgreen' },
+                            }}
+                            onClick={() => {
+                              markForDeletion(photo);
+                            }}
+                          />
                         </Flex>
                       </Flex>
                       <Image
@@ -540,73 +832,74 @@ export const BasePage = ({ children }: FlexProps) => {
                           setFocusedImage(photo);
                         }}
                         src={`data:image/jpg;base64,${photo?.image}`}
-                      ></Image>
+                      />
                     </Flex>
                     <Flex
                       width='50%'
                       id={`preview-image-info-${index}`}
                       direction='column'
                       justifyContent={'space-between'}
+                      padding='2'
                       onClick={() => {
                         setFocusedImage(photo);
                       }}
                     >
                       <Flex
-                        direction='row'
+                        direction='column'
                         width='100%'
-                        id={`preview-image-info-location-${index}`}
+                        id={`preview-image-location-${index}`}
                         maxHeight='30%'
                         textOverflow={'ellipsis'}
                         overflow='auto'
                       >
-                        <Text fontSize={'12px'} width='25%' fontWeight={'bold'}>
+                        <TextHeader fontSize={'16px'} width='100%'>
                           Location
-                        </Text>
-                        <Text fontSize={'12px'} width='75%'>
+                        </TextHeader>
+                        <TextBody fontSize={'14px'} width='100%'>
                           {photo?.value}
-                        </Text>
+                        </TextBody>
                       </Flex>
                       <Flex
-                        direction='row'
+                        direction='column'
                         width='100%'
-                        id={`preview-image-info-size-${index}`}
+                        id={`preview-image-size-${index}`}
                         maxHeight='20%'
                         overflow='auto'
                       >
-                        <Text fontSize={'12px'} width='25%' fontWeight={'bold'}>
+                        <TextHeader fontSize={'16px'} width='100%'>
                           Size (kB)
-                        </Text>
-                        <Text fontSize={'12px'} width='75%'>
+                        </TextHeader>
+                        <TextBody fontSize={'14px'} width='100%'>
                           {Math.ceil(photo?.stats?.size / 1024)}
-                        </Text>
+                        </TextBody>
                       </Flex>
                       <Flex
-                        direction='row'
+                        direction='column'
                         width='100%'
-                        id={`preview-image-info-resolution-${index}`}
+                        id={`preview-image-resolution-${index}`}
                         maxHeight='20%'
                         overflow='auto'
                       >
-                        <Text fontSize={'12px'} width='25%' fontWeight={'bold'}>
+                        <TextHeader fontSize={'16px'} width='100%'>
                           Resolution (H x W)
-                        </Text>
-                        <Text fontSize={'12px'} width='75%'>
+                        </TextHeader>
+                        <TextBody fontSize={'14px'} width='100%'>
                           {photo?.stats?.width} x {photo?.stats?.height}
-                        </Text>
+                        </TextBody>
                       </Flex>
                       <Flex
-                        direction='row'
+                        direction='column'
                         width='100%'
-                        id={`preview-image-info-created-${index}`}
+                        id={`preview-image-created-${index}`}
                         maxHeight='30%'
                         overflow='auto'
                       >
-                        <Text fontSize={'12px'} width='25%' fontWeight={'bold'}>
+                        <TextHeader fontSize={'16px'} width='100%'>
                           Created at
-                        </Text>
-                        <Text fontSize={'12px'} width='75%'>
+                        </TextHeader>
+                        <TextBody fontSize={'14px'} width='100%'>
                           {photo?.stats?.birthtime?.toString()}
-                        </Text>
+                        </TextBody>
                       </Flex>
                     </Flex>
                   </Flex>

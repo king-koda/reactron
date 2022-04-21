@@ -15,7 +15,7 @@ declare global {
       rootFolderSelect: () => any;
       walkFs: (path: string) => Promise<any>;
       getPhotos: (string) => Promise<any>;
-      // getHtKeys: () => any;
+      deleteDuplicates: (toBeDeleted: string[]) => Promise<number>;
     };
     // ipcRenderer: any;
   }

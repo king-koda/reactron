@@ -5,15 +5,27 @@ window.ipcRenderer = require('electron').ipcRenderer;
 window.contextBridge = require('electron').contextBridge;
 
 window.contextBridge.exposeInMainWorld('electronAPI', {
-  rootFolderSelect: () => ipcRenderer.invoke('dialog:rootFolderSelect'),
-  walkFs: async (path) => {
-    return await ipcRenderer
+  rootFolderSelect: async () =>
+    await ipcRenderer
+      .invoke('dialog:rootFolderSelect')
+      .then()
+      .catch((err) => Logger.debug('root folder select err', err)),
+
+  walkFs: async (path) =>
+    await ipcRenderer
       .invoke('run:walkFs', path)
       .then()
-      .catch((err) => Logger.debug('walkFs err', err));
-  },
-  getHtKeys: () => ipcRenderer.invoke('run:getHtKeys'),
-  getPhotos: (hash) => ipcRenderer.invoke('run:getPhotos', hash),
+      .catch((err) => Logger.debug('walkFs err', err)),
+  getPhotos: async (hash) =>
+    await ipcRenderer
+      .invoke('run:getPhotos', hash)
+      .then()
+      .catch((err) => Logger.debug('getPhotos err', err)),
+  deleteDuplicates: async (toBeDeleted) =>
+    await ipcRenderer
+      .invoke('run:deleteDuplicates', toBeDeleted)
+      .then()
+      .catch((err) => Logger.debug('delete duplicates err', err)),
 });
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // window.ipcRenderer = ipcRenderer;

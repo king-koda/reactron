@@ -7,7 +7,7 @@ exports.PageSidebar = void 0;
 const react_1 = require("@chakra-ui/react");
 const react_2 = __importDefault(require("react"));
 const PageSidebar = ({ ...rest }) => {
-    return (react_2.default.createElement(react_1.Flex, { className: "pgsidebar", height: "100%", width: "10%", position: "fixed", justifySelf: "flex-end", bgColor: "white", fill: "white", zIndex: 3, borderRight: "solid 6px black", borderLeft: "solid 6px black", borderBottom: "solid 6px black", borderTop: "solid 6px black", ...rest }));
+    return (react_2.default.createElement(react_1.Flex, { className: 'pgsidebar', height: '100%', width: '10%', position: 'fixed', justifySelf: 'flex-end', bgColor: 'white', fill: 'white', zIndex: 3, borderRight: 'solid 4px darkblue', borderLeft: 'solid 4px darkblue', borderBottom: 'solid 4px darkblue', borderTop: 'solid 4px darkblue', ...rest }));
 };
 exports.PageSidebar = PageSidebar;
 //# sourceMappingURL=PageSidebar.js.map

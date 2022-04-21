@@ -7,7 +7,7 @@ exports.PageHeader = void 0;
 const react_1 = require("@chakra-ui/react");
 const react_2 = __importDefault(require("react"));
 const PageHeader = ({ ...rest }) => {
-    return (react_2.default.createElement(react_1.Flex, { className: "pgheader", height: "20%", width: "100vw", bgColor: "white", zIndex: 2, position: "fixed", border: "solid 6px black", ...rest }));
+    return (react_2.default.createElement(react_1.Flex, { className: 'pgheader', height: '20%', width: '100vw', bgColor: 'white', zIndex: 2, position: 'fixed', border: 'solid 4px darkblue', ...rest }));
 };
 exports.PageHeader = PageHeader;
 //# sourceMappingURL=PageHeader.js.map

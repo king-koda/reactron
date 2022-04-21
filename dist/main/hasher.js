@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.walk = exports.getJSONFromFile = exports.getStrigifiedHtKeys = exports.getFilesFromHashKey = exports.saveJSON2File = exports.findDuplicates = void 0;
+exports.walk = exports.getJSONFromFile = exports.deleteDuplicates = exports.getStrigifiedHtKeys = exports.walkFs = exports.rootFolderSelect = exports.getFilesFromHashKey = exports.saveJSON2File = exports.findDuplicates = void 0;
 const fs_1 = require("fs");
 const fs_2 = __importDefault(require("fs"));
 const node_dir_1 = __importDefault(require("node-dir"));
 const imghash_1 = __importDefault(require("imghash"));
 const js_logger_1 = __importDefault(require("js-logger"));
 const image_size_1 = __importDefault(require("image-size"));
+const electron_1 = require("electron");
 function findDuplicates() { }
 exports.findDuplicates = findDuplicates;
 function saveJSON2File(cache) {
@@ -43,6 +44,30 @@ async function getFilesFromHashKey(cache, hashKey) {
     return imageBufferArray;
 }
 exports.getFilesFromHashKey = getFilesFromHashKey;
+async function rootFolderSelect(mainWindow) {
+    const { canceled, filePaths } = await electron_1.dialog.showOpenDialog(mainWindow, {
+        properties: ['openDirectory'],
+    });
+    if (canceled) {
+        return;
+    }
+    else {
+        return filePaths[0];
+    }
+}
+exports.rootFolderSelect = rootFolderSelect;
+async function walkFs(gNodeCache, path) {
+    return await walk(gNodeCache, path)
+        .then(() => {
+        js_logger_1.default.debug('walkFs done');
+        saveJSON2File(gNodeCache); // need to manually convert to json string because the formatting in file is fucked
+    })
+        .then(() => getStrigifiedHtKeys(gNodeCache))
+        .catch((err) => {
+        js_logger_1.default.debug('walkFs error', err);
+    });
+}
+exports.walkFs = walkFs;
 function getStrigifiedHtKeys(cache) {
     let cacheHashKeys = [];
     let totalFiles = cache.get('totalFiles');
@@ -58,6 +83,18 @@ function getStrigifiedHtKeys(cache) {
     }, null, 2); //TODO: is this actually being received by FE?
 }
 exports.getStrigifiedHtKeys = getStrigifiedHtKeys;
+async function deleteDuplicates(toBeDeleted) {
+    if (toBeDeleted?.length === 0)
+        return 0;
+    let filesDeleted = 0;
+    for (const fileToDelete of toBeDeleted) {
+        console.log('fileToDelete', fileToDelete);
+        // fs.rename
+        filesDeleted++;
+    }
+    return filesDeleted;
+}
+exports.deleteDuplicates = deleteDuplicates;
 function getJSONFromFile() {
     return fs_2.default.readFileSync('C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json');
 }

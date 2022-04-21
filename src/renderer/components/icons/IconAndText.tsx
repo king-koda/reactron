@@ -1,5 +1,4 @@
 import {
-  Button,
   ComponentWithAs,
   Flex,
   FlexProps,
@@ -7,18 +6,19 @@ import {
   IconProps,
   Text,
   TextProps,
-} from "@chakra-ui/react";
-import React, { ReactElement } from "react";
-import { IconContext, IconType } from "react-icons";
+} from '@chakra-ui/react';
+import React from 'react';
+import { IconType } from 'react-icons';
 
-export type IconAndTextProps = {
+export type IconAndTextProps = FlexProps & {
+  isDisabled?: boolean;
   icon?: IconType;
   text?: string;
   flex?: ComponentWithAs<any>;
   iconProps?: IconProps;
   textProps?: TextProps;
-  flexProps?: FlexProps;
   onClick?: () => any;
+  isButton?: boolean;
 };
 
 const IconAndText = ({
@@ -28,42 +28,43 @@ const IconAndText = ({
   onClick,
   iconProps,
   textProps,
-  flexProps,
+  isDisabled = false,
+  isButton = true,
   ...rest
 }: IconAndTextProps) => {
   return (
     <Flex
-      width="100px"
-      height="100px"
-      display="block"
-      align="center"
-      textAlign={"center"}
-      onClick={onClick}
-      userSelect="none"
-      _hover={{ cursor: "pointer", border: "solid 2px blue" }}
-      {...flexProps}
+      display='block'
+      align='center'
+      textAlign={'center'}
+      opacity={!isDisabled ? 1 : 0.3}
+      onClick={isButton && !isDisabled ? onClick : undefined}
+      userSelect={isButton && !isDisabled ? 'none' : undefined}
+      {...rest}
     >
-      {/* <IconContext.Provider
-        value={{ color: "blue", size: "50px", style: { color: "yellow" } }}
-      > */}
       <Icon
-        paddingTop={3}
-        alignSelf="center"
+        margin={3}
+        alignSelf='center'
         as={icon}
-        type="button"
-        textAlign={"center"}
-        fontSize="50px"
-        color="yellow"
+        width='60px'
+        height='60px'
+        type='button'
+        textAlign={'center'}
+        fontSize='50px'
+        _hover={
+          isButton && !isDisabled
+            ? { cursor: 'pointer', border: 'solid 2px blue' }
+            : undefined
+        }
         {...iconProps}
       />
-      {/* </IconContext.Provider> */}
       <Text
-        fontWeight={"bold"}
-        fontSize="15px"
-        width="100px"
+        fontWeight={'bold'}
+        fontSize='15px'
+        width='100px'
         marginTop={-1}
-        textAlign={"center"}
-        textColor={"black"}
+        textAlign={'center'}
+        textColor={'black'}
         {...textProps}
       >
         {text}

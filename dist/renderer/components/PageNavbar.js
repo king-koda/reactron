@@ -9,7 +9,9 @@ const react_2 = __importDefault(require("react"));
 const PageNavbar = ({ children, ...rest }) => {
     return (react_2.default.createElement(react_1.Flex, { className: 'pgnavbar', height: '20%', width: '100%', 
         //top="calc(20%)"
-        bgColor: 'rgba(0, 0, 0, 0.0)', zIndex: 4, fill: 'white', position: 'fixed', borderBottom: 'solid 6px black', borderLeft: 'solid 6px black', borderRight: 'solid 6px black', borderTop: 'solid 6px black', ...rest }, children));
+        bgColor: 'rgba(0, 0, 0, 0.0)', zIndex: 3, 
+        // fill='white'
+        position: 'fixed', borderBottom: 'solid 4px darkblue', borderLeft: 'solid 4px darkblue', borderRight: 'solid 4px darkblue', borderTop: 'solid 4px darkblue', ...rest }, children));
 };
 exports.PageNavbar = PageNavbar;
 //# sourceMappingURL=PageNavbar.js.map

@@ -10,6 +10,7 @@ import { json } from 'stream/consumers';
 import NodeCache from 'node-cache';
 import Logger from 'js-logger';
 import sizeOf from 'image-size';
+import { dialog } from 'electron';
 export function findDuplicates() {}
 
 export function saveJSON2File(cache: NodeCache) {
@@ -52,6 +53,31 @@ export async function getFilesFromHashKey(cache: NodeCache, hashKey: string) {
 
   return imageBufferArray;
 }
+
+export async function rootFolderSelect(mainWindow) {
+  const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory'],
+  });
+
+  if (canceled) {
+    return;
+  } else {
+    return filePaths[0];
+  }
+}
+
+export async function walkFs(gNodeCache, path) {
+  return await walk(gNodeCache, path)
+    .then(() => {
+      Logger.debug('walkFs done');
+      saveJSON2File(gNodeCache); // need to manually convert to json string because the formatting in file is fucked
+    })
+    .then(() => getStrigifiedHtKeys(gNodeCache))
+    .catch((err) => {
+      Logger.debug('walkFs error', err);
+    });
+}
+
 export function getStrigifiedHtKeys(cache: NodeCache) {
   let cacheHashKeys: {}[] = [];
   let totalFiles: number | undefined = cache.get('totalFiles');
@@ -71,6 +97,19 @@ export function getStrigifiedHtKeys(cache: NodeCache) {
     null,
     2
   ); //TODO: is this actually being received by FE?
+}
+
+export async function deleteDuplicates(toBeDeleted: string[]) {
+  if (toBeDeleted?.length === 0) return 0;
+
+  let filesDeleted: number = 0;
+
+  for (const fileToDelete of toBeDeleted) {
+    console.log('fileToDelete', fileToDelete);
+    // fs.rename
+    filesDeleted++;
+  }
+  return filesDeleted;
 }
 
 export function getJSONFromFile() {
