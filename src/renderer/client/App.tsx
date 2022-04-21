@@ -1,16 +1,8 @@
-import {
-  Button,
-  ChakraProvider,
-  Flex,
-  Image,
-  Input,
-  Text,
-  theme,
-} from '@chakra-ui/react';
-import React, { createRef, useEffect, useState } from 'react';
-import { Views } from '../views/Views';
-import { BrowserRouter } from 'react-router-dom';
+import { ChakraProvider, theme } from '@chakra-ui/react';
+import React from 'react';
+import { HashRouter } from 'react-router-dom';
 import '../styles/style.css';
+import { Views } from '../views/Views';
 // const { ipcRenderer } = require("electron");
 
 export const App = () => {
@@ -46,11 +38,12 @@ export const App = () => {
   //   if (file) console.log("file", file);
   // }, [file]);
 
+  console.log('hisaddw');
   return (
     <ChakraProvider theme={theme}>
-      <BrowserRouter>
+      <HashRouter>
         <Views></Views>
-      </BrowserRouter>
+      </HashRouter>
     </ChakraProvider>
     // <Flex width="100vw" height="100vh" bgColor={"blue"}>
     /* <Button>Potato</Button>

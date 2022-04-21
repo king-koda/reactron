@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
 const react_1 = require("@chakra-ui/react");
 const react_2 = __importDefault(require("react"));
-const Views_1 = require("../views/Views");
 const react_router_dom_1 = require("react-router-dom");
 require("../styles/style.css");
+const Views_1 = require("../views/Views");
 // const { ipcRenderer } = require("electron");
 const App = () => {
     // ipcRenderer.on("asynReply", (event: any, args: any) => {
@@ -37,8 +37,9 @@ const App = () => {
     // useEffect(() => {
     //   if (file) console.log("file", file);
     // }, [file]);
+    console.log('hisaddw');
     return (react_2.default.createElement(react_1.ChakraProvider, { theme: react_1.theme },
-        react_2.default.createElement(react_router_dom_1.BrowserRouter, null,
+        react_2.default.createElement(react_router_dom_1.HashRouter, null,
             react_2.default.createElement(Views_1.Views, null)))
     // <Flex width="100vw" height="100vh" bgColor={"blue"}>
     /* <Button>Potato</Button>

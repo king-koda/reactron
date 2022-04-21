@@ -1,6 +1,5 @@
 // Modules to control application life and create native browser window
 import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
-import electronReload from 'electron-reload';
 import Logger from 'js-logger';
 import NodeCache from 'node-cache';
 import * as path from 'path';
@@ -9,15 +8,12 @@ import {
   getFilesFromHashKey,
   rootFolderSelect,
   walkFs,
-} from '../../dist/main/hasher';
+} from './hasher';
+const url = require('url');
 
 const isDev = true;
 const gNodeCache = new NodeCache();
 Logger.setLevel(Logger.DEBUG);
-
-if (isDev) {
-  electronReload(__dirname, {});
-}
 
 let mainWindow: BrowserWindow;
 
@@ -86,14 +82,28 @@ async function createWindow() {
   // }
 
   // const menu = getMenuConfig();
-
+  // console.log(path.join(__dirname, '..', '..', 'public', 'index.html'));
+  // mainWindow.loadURL(
+  //   url.format({
+  //     pathname: path.join(__dirname, '..', '..', 'build', 'index.html'),
+  //     protocol: 'file:',
+  //     slashes: true,
+  //   })
+  // );
   mainWindow.setMenu(null);
-  mainWindow
-    .loadURL('http://localhost:3000')
-    .catch((error) => Logger.debug('main window load url error', error));
   // mainWindow
-  //   .loadFile(path.join(__dirname, "/index.html"))
-  //   .catch((error) => Logger.debug(error));
+  //   .loadURL('http://localhost:3000')
+  //   .catch((error) => Logger.debug('main window load url error', error));
+  // mainWindow
+  //   .loadURL(
+  //     `file://${path.join(__dirname, '..', '..', 'public', 'index.html')}`
+  //   )
+  //   .catch((error) => Logger.debug('main window load url error', error));
+
+  mainWindow
+    .loadFile(path.join(__dirname, '..', '..', 'build', 'index.html'))
+    .catch((error) => console.log(error));
+
   // Open the DevTools.
   isDev ? mainWindow.webContents.openDevTools() : null;
 }

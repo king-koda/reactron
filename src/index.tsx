@@ -3,8 +3,9 @@ import { ColorModeScript } from '@chakra-ui/react';
 // import reportWebVitals from "./reportWebVitals";
 // import * as serviceWorker from "./serviceWorker";
 import React from 'react';
-import ReactDOM from 'react-dom';
 import * as ReactDOMClient from 'react-dom/client';
+import ReactDOM from 'react-dom';
+
 import { App } from './renderer/client/App';
 
 declare global {
@@ -17,30 +18,29 @@ declare global {
       getPhotos: (string) => Promise<any>;
       deleteDuplicates: (toBeDeleted: string[]) => Promise<number>;
     };
-    // ipcRenderer: any;
   }
 }
-//
-//
-////
-////
 
-// interface Window {
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   ipcRenderer: any;
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-// }
-const container = document.getElementById('root');
-const root = container && ReactDOMClient.createRoot(container);
+// console.log('hi');
+// const container = document.getElementById('root');
+// const root = container && ReactDOMClient.createRoot(container);
 
-root &&
-  root.render(
-    <React.StrictMode>
-      <ColorModeScript />
-      <App />
-    </React.StrictMode>
-  );
+// root &&
+//   root.render(
+//     <React.StrictMode>
+//       <ColorModeScript />
+//       <App />
+//     </React.StrictMode>
+//   );
 
+ReactDOM.render(
+  <React.StrictMode>
+    <ColorModeScript />
+
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA

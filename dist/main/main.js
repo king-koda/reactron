@@ -28,17 +28,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules to control application life and create native browser window
 const electron_1 = require("electron");
-const electron_reload_1 = __importDefault(require("electron-reload"));
 const js_logger_1 = __importDefault(require("js-logger"));
 const node_cache_1 = __importDefault(require("node-cache"));
 const path = __importStar(require("path"));
 const hasher_1 = require("./hasher");
+const url = require('url');
 const isDev = true;
 const gNodeCache = new node_cache_1.default();
 js_logger_1.default.setLevel(js_logger_1.default.DEBUG);
-if (isDev) {
-    (0, electron_reload_1.default)(__dirname, {});
-}
 let mainWindow;
 function getMenuConfig() {
     return electron_1.Menu.buildFromTemplate([
@@ -101,13 +98,26 @@ async function createWindow() {
     //   mainWindow.width = width;
     // }
     // const menu = getMenuConfig();
+    // console.log(path.join(__dirname, '..', '..', 'public', 'index.html'));
+    // mainWindow.loadURL(
+    //   url.format({
+    //     pathname: path.join(__dirname, '..', '..', 'build', 'index.html'),
+    //     protocol: 'file:',
+    //     slashes: true,
+    //   })
+    // );
     mainWindow.setMenu(null);
-    mainWindow
-        .loadURL('http://localhost:3000')
-        .catch((error) => js_logger_1.default.debug('main window load url error', error));
     // mainWindow
-    //   .loadFile(path.join(__dirname, "/index.html"))
-    //   .catch((error) => Logger.debug(error));
+    //   .loadURL('http://localhost:3000')
+    //   .catch((error) => Logger.debug('main window load url error', error));
+    // mainWindow
+    //   .loadURL(
+    //     `file://${path.join(__dirname, '..', '..', 'public', 'index.html')}`
+    //   )
+    //   .catch((error) => Logger.debug('main window load url error', error));
+    mainWindow
+        .loadFile(path.join(__dirname, '..', '..', 'build', 'index.html'))
+        .catch((error) => console.log(error));
     // Open the DevTools.
     isDev ? mainWindow.webContents.openDevTools() : null;
 }

@@ -1,4 +1,5 @@
 {
+  "totalFiles": 16,
   "ffe0f800f030e07ff037c07ec037f816fc77fc670000e07be071f0e0fc01ffc1": [
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\dawdwad.jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\test folder 1\\dawdwad.jpg",
@@ -17,6 +18,5 @@
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\things_ferret - Copy (5).jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\things_ferret - Copy.jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\things_ferret.jpg"
-  ],
-  "totalFiles": 16
+  ]
 }
