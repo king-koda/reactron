@@ -22,25 +22,25 @@ declare global {
 }
 
 // console.log('hi');
-// const container = document.getElementById('root');
-// const root = container && ReactDOMClient.createRoot(container);
+const container = document.getElementById('root');
+const root = container && ReactDOMClient.createRoot(container);
 
-// root &&
-//   root.render(
-//     <React.StrictMode>
-//       <ColorModeScript />
-//       <App />
-//     </React.StrictMode>
-//   );
+root &&
+  root.render(
+    <React.StrictMode>
+      <ColorModeScript />
+      <App />
+    </React.StrictMode>
+  );
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ColorModeScript />
+// ReactDOM.render(
+//   <React.StrictMode>
+//     <ColorModeScript />
 
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+//     <App />
+//   </React.StrictMode>,
+//   document.getElementById('root')
+// );
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA

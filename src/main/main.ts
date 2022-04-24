@@ -9,7 +9,6 @@ import {
   rootFolderSelect,
   walkFs,
 } from './hasher';
-const url = require('url');
 
 const isDev = true;
 const gNodeCache = new NodeCache();
