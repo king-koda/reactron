@@ -55,7 +55,7 @@
     "@types/react-dom": "^18.0.0",
     "tsc": "^2.0.4",
     "concurrently": "^7.1.0",
-    "react-scripts": "^5.0.0",
+    "react-scripts": "^5.0.1",
     "electron-reload": "^2.0.0-alpha.1",
     "@electron-forge/cli": "^6.0.0-beta.63",
     "@electron-forge/maker-deb": "^6.0.0-beta.63",
