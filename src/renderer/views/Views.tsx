@@ -1,11 +1,13 @@
-import React from "react";
-import { Route, Routes } from "react-router";
-import { Main } from "./Main";
+import React from 'react';
+import { Route, Routes } from 'react-router';
+import BasePage from './BasePage';
 
-export const Views = () => {
+const Views = () => {
   return (
     <Routes>
-      <Route path="/" element={<Main></Main>}></Route>
+      <Route path="/" element={<BasePage />} />
     </Routes>
   );
 };
+
+export default Views;

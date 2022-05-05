@@ -1,173 +1,219 @@
-// Modules to control application life and create native browser window
-import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
+/* eslint global-require: off, no-console: off, promise/always-return: off */
+
+/**
+ * This module executes inside of electron's main process. You can start
+ * electron renderer process from here and communicate with the other processes
+ * through IPC.
+ *
+ * When running `npm run build` or `npm run build:main`, this file is compiled to
+ * `./src/main.js` using webpack. This gives us some performance wins.
+ */
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  IpcMainInvokeEvent,
+  shell,
+} from 'electron';
+import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
 import Logger from 'js-logger';
 import NodeCache from 'node-cache';
-import * as path from 'path';
+import path from 'path';
 import {
   deleteDuplicates,
-  getFilesFromHashKey,
-  rootFolderSelect,
-  walkFs,
+  getPhotos,
+  getStrigifiedHtKeys,
+  saveJSON2File,
+  walk,
 } from './hasher';
+import MenuBuilder from './menu';
+import { resolveHtmlPath } from './util';
+
+export default class AppUpdater {
+  constructor() {
+    log.transports.file.level = 'info';
+    autoUpdater.logger = log;
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+}
 
 const isDev = true;
 const gNodeCache = new NodeCache();
 Logger.setLevel(Logger.DEBUG);
 
-let mainWindow: BrowserWindow;
+let mainWindow: BrowserWindow | null = null;
 
-function getMenuConfig() {
-  return Menu.buildFromTemplate([
-    // {
-    //   label: 'File',
-    //   submenu: [
-    //     {
-    //       click: () => mainWindow.webContents.send('update-counter', 1),
-    //       label: 'Increment',
-    //     },
-    //     {
-    //       click: () => mainWindow.webContents.send('update-counter', -1),
-    //       label: 'Decrement',
-    //     },
-    //   ],
-    // },
-    // {
-    //   label: 'Edit',
-    //   submenu: [
-    //     {
-    //       click: () => mainWindow.webContents.send('update-counter', 1),
-    //       label: 'Increment',
-    //     },
-    //     {
-    //       click: () => mainWindow.webContents.send('update-counter', -1),
-    //       label: 'Decrement',
-    //     },
-    //   ],
-    // },
-    // {
-    //   label: 'Preferences',
-    //   submenu: [
-    //     {
-    //       click: () => mainWindow.webContents.send('update-counter', 1),
-    //       label: 'Increment',
-    //     },
-    //     {
-    //       click: () => mainWindow.webContents.send('update-counter', -1),
-    //       label: 'Decrement',
-    //     },
-    //   ],
-    // },
-  ]);
+// ipcMain.on('ipc-example', async (event, arg) => {
+//   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
+//   console.log(msgTemplate(arg));
+//   event.reply('ipc-example', msgTemplate('pong'));
+// });
+
+if (process.env.NODE_ENV === 'production') {
+  const sourceMapSupport = require('source-map-support');
+  sourceMapSupport.install();
 }
 
-async function createWindow() {
-  // Create the browser window.
+const isDebug =
+  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+
+if (isDebug) {
+  require('electron-debug')();
+}
+
+const installExtensions = async () => {
+  const installer = require('electron-devtools-installer');
+  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+  const extensions = ['REACT_DEVELOPER_TOOLS'];
+
+  return installer
+    .default(
+      extensions.map((name) => installer[name]),
+      forceDownload
+    )
+    .catch(console.log);
+};
+
+const createWindow = async () => {
+  if (isDebug) {
+    await installExtensions();
+  }
+
+  const RESOURCES_PATH = app.isPackaged
+    ? path.join(process.resourcesPath, 'assets')
+    : path.join(__dirname, '../../assets');
+
+  const getAssetPath = (...paths: string[]): string => {
+    return path.join(RESOURCES_PATH, ...paths);
+  };
+
   mainWindow = new BrowserWindow({
+    show: false,
     width: 1920,
     height: 1080,
+    icon: getAssetPath('icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, '..', '..', 'preload.js'),
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
       nodeIntegration: true,
       contextIsolation: true,
     },
   });
 
-  // const window = BrowserWindow.getFocusedWindow();
+  // mainWindow.setMenu(null);
 
-  // if (window) {
-  //   const [width, height] = window.getSize();
-  //   mainWindow.height = height;
-  //   mainWindow.width = width;
-  // }
+  mainWindow.loadURL(resolveHtmlPath('index.html'));
 
-  // const menu = getMenuConfig();
-  // console.log(path.join(__dirname, '..', '..', 'public', 'index.html'));
-  // mainWindow.loadURL(
-  //   url.format({
-  //     pathname: path.join(__dirname, '..', '..', 'build', 'index.html'),
-  //     protocol: 'file:',
-  //     slashes: true,
-  //   })
-  // );
-  mainWindow.setMenu(null);
-  // mainWindow
-  //   .loadURL('http://localhost:3000')
-  //   .catch((error) => Logger.debug('main window load url error', error));
-  // mainWindow
-  //   .loadURL(
-  //     `file://${path.join(__dirname, '..', '..', 'public', 'index.html')}`
-  //   )
-  //   .catch((error) => Logger.debug('main window load url error', error));
+  mainWindow.on('ready-to-show', () => {
+    if (!mainWindow) {
+      throw new Error('"mainWindow" is not defined');
+    }
+    if (process.env.START_MINIMIZED) {
+      mainWindow.minimize();
+    } else {
+      mainWindow.show();
+    }
+  });
 
-  mainWindow
-    .loadFile(path.join(__dirname, '..', '..', 'build', 'index.html'))
-    .catch((error) => console.log(error));
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
 
-  // Open the DevTools.
-  isDev ? mainWindow.webContents.openDevTools() : null;
-}
+  const menuBuilder = new MenuBuilder(mainWindow);
+  menuBuilder.buildMenu();
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  createWindow()
-    .then(() => {
-      isDev ? Logger.debug('initial window created') : null;
-    })
-    .catch((error) =>
-      isDev ? Logger.debug('error on initial create window') : null
+  // Open urls in the user's browser
+  mainWindow.webContents.setWindowOpenHandler((edata) => {
+    shell.openExternal(edata.url);
+    return { action: 'deny' };
+  });
+
+  // Remove this if your app does not use auto updates
+  // eslint-disable-next-line
+  // new AppUpdater();
+};
+
+/**
+ * Add event listeners...
+ */
+
+app.on('window-all-closed', () => {
+  // Respect the OSX convention of having the application in memory even
+  // after all windows have been closed
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+app
+  .whenReady()
+  .then(async () => {
+    createWindow();
+    if (isDev) Logger.debug('initial window created');
+
+    app.on('activate', () => {
+      // On macOS it's common to re-create a window in the app when the
+      // dock icon is clicked and there are no other windows open.
+      if (mainWindow === null) createWindow();
+    });
+
+    ipcMain.handle(
+      'dialog:rootFolderSelect',
+      async (event: IpcMainInvokeEvent) => {
+        if (mainWindow) {
+          const { canceled, filePaths } = await dialog.showOpenDialog(
+            mainWindow,
+            {
+              properties: ['openDirectory'],
+            }
+          );
+
+          if (canceled) {
+            return false;
+          }
+
+          return filePaths[0];
+        }
+
+        return false;
+      }
     );
 
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0)
-      createWindow()
-        .then(() =>
-          isDev ? Logger.debug('window created on app activate') : null
-        )
-        .catch((error) =>
-          isDev ? Logger.debug('error on create window activate') : null
-        );
-  });
+    ipcMain.handle(
+      'run:getPhotos',
+      async (event: IpcMainInvokeEvent, hash: string) => {
+        const result = await getPhotos(gNodeCache, hash);
+        return result;
+      }
+    );
 
-  ipcMain.handle('dialog:rootFolderSelect', async (event) => {
-    return await rootFolderSelect(mainWindow)
-      .then()
-      .catch((err) => console.log('root folder select error:', err));
-  });
+    ipcMain.handle(
+      'run:walkFs',
+      async (event: IpcMainInvokeEvent, rootPath: string) => {
+        const result = await walk(gNodeCache, rootPath);
+        saveJSON2File(gNodeCache);
 
-  ipcMain.handle('run:getPhotos', async (event, hash) => {
-    return await getFilesFromHashKey(gNodeCache, hash)
-      .then()
-      .catch((err) => console.log('get files from hash error:', err));
-  });
+        if (result) return getStrigifiedHtKeys(gNodeCache);
+        return false;
+      }
+    );
 
-  ipcMain.handle('run:walkFs', async (event, path) => {
-    const result = await walkFs(gNodeCache, path)
-      .then((result) => result)
-      .catch((err) => Logger.debug('walkFs main error'));
-    if (!!result) {
-      return result;
-    }
-    return false;
-  });
+    ipcMain.handle(
+      'run:deleteDuplicates',
+      (event: IpcMainInvokeEvent, toBeDeleted: string[]) => {
+        const result = deleteDuplicates(toBeDeleted);
 
-  ipcMain.handle('run:deleteDuplicates', async (event, toBeDeleted) => {
-    const result = await deleteDuplicates(toBeDeleted)
-      .then((result) => result)
-      .catch((err) => Logger.debug('deleteDuplicates error'));
+        if (result) {
+          return result;
+        }
 
-    if (!!result) {
-      return result;
-    }
-  });
-});
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit();
-});
+        return false;
+      }
+    );
+  })
+  .catch((error: Error) =>
+    isDev ? Logger.debug('error on initial create window', error) : null
+  );
