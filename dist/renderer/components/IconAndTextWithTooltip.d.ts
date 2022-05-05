@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { TooltipProps } from '@chakra-ui/react';
 import { IconAndTextProps } from './icons/IconAndText';
 declare type IconAndTextWithTooltipProps = IconAndTextProps & {

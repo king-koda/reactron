@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { ComponentWithAs, FlexProps, IconProps, TextProps } from '@chakra-ui/react';
 import { IconType } from 'react-icons';
 export declare type IconAndTextProps = FlexProps & {

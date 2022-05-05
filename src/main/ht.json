@@ -1,9 +1,10 @@
 {
+  "totalFiles": 16,
   "ffe0f800f030e07ff037c07ec037f816fc77fc670000e07be071f0e0fc01ffc1": [
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\dawdwad.jpg",
+    "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\test folder 1\\test folder 2\\dawdwad.jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\test folder 1\\dawdwad.jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\test folder 2\\dawdwad (2).jpg",
-    "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\test folder 1\\test folder 2\\dawdwad.jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\test folder 2\\dawdwad.jpg"
   ],
   "802f896f932787e381e1d1ef06f388b3ffff91ff0929000083ff81ff800101ff": [
@@ -11,12 +12,11 @@
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\test folder 1\\3333.jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\test folder 2\\potato2.jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\test folder 1\\test folder 2\\ssdadad.jpg",
-    "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\things_ferret - Copy (3).jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\things_ferret - Copy (3) - Copy.jpg",
+    "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\things_ferret - Copy (3).jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\things_ferret - Copy (4).jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\things_ferret - Copy (5).jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\things_ferret - Copy.jpg",
     "C:\\Users\\Christian\\Documents\\dev\\reactron\\test_images\\things_ferret.jpg"
-  ],
-  "totalFiles": 16
+  ]
 }

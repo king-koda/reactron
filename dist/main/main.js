@@ -32,7 +32,6 @@ const js_logger_1 = __importDefault(require("js-logger"));
 const node_cache_1 = __importDefault(require("node-cache"));
 const path = __importStar(require("path"));
 const hasher_1 = require("./hasher");
-const url = require('url');
 const isDev = true;
 const gNodeCache = new node_cache_1.default();
 js_logger_1.default.setLevel(js_logger_1.default.DEBUG);
