@@ -11298,10 +11298,10 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
-react-refresh-typescript@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/react-refresh-typescript/-/react-refresh-typescript-2.0.4.tgz#f20acdb3a538fc79da10c64fdd5560bea01309f1"
-  integrity sha512-ySsBExEFik5Jjf7NoXtFbzUk2rYWM4gF5gg+wRTNmp9p7B2uMpAAa339FHWqmB8EAr0e6mzzskAXxc0Jd04fBw==
+react-refresh-typescript@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/react-refresh-typescript/-/react-refresh-typescript-2.0.7.tgz#ba91be2da4f1e86bba8629f1df0d4b9ff87b9970"
+  integrity sha512-KbuW57FauO11e6a9gU836sCm3M3z0b2+J2qPhUudg0QplOfz0eAF3gMeshcUC/ChfNLJCK1SZxvYmUtRxiZE5A==
 
 react-refresh@^0.11.0:
   version "0.11.0"
