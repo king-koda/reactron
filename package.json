@@ -168,7 +168,7 @@
     "@electron-forge/maker-zip": "^6.0.0-beta.63",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.5",
     "@react-icons/all-files": "^4.1.0",
-    "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
+    "@teamsupercell/typings-for-css-modules-loader": "^2.5.2",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.0.0",
     "@types/electron": "^1.6.10",
