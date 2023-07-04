@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "description": "A foundation for scalable desktop apps",
+  "name": "reactron",
+  "description": "Photo duplicate eliminator",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
@@ -31,9 +31,9 @@
     ]
   },
   "build": {
-    "productName": "ElectronReact",
+    "productName": "Reactron",
     "extends": null,
-    "appId": "org.erb.ElectronReact",
+    "appId": "org.erb.Reactron",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -91,47 +91,29 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "king-koda",
+      "repo": "reactron"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/king-koda/reactron.git"
   },
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "King Koda",
+    "email": "kingkodaninja@gmail.com"
   },
-  "contributors": [
-    {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
-    },
-    {
-      "name": "John Tran",
-      "email": "jptran318@gmail.com",
-      "url": "https://github.com/jooohhn"
-    }
-  ],
+  "contributors": [],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/king-koda/reactron/issues"
   },
   "keywords": [
     "electron",
-    "boilerplate",
     "react",
-    "typescript",
-    "ts",
-    "sass",
-    "webpack",
-    "hot",
-    "reload"
+    "typescript"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/king-koda/reactron#readme",
   "jest": {
     "testURL": "http://localhost/",
     "testEnvironment": "jsdom",
@@ -233,7 +215,7 @@
     "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",
     "tsc": "^2.0.4",
-    "typescript": "^4.6.3",
+    "typescript": "^4.6.4",
     "url-loader": "^4.1.1",
     "webpack": "^5.71.0",
     "webpack-bundle-analyzer": "^4.5.0",
@@ -259,16 +241,13 @@
     "node-dir": "^0.1.17",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-icons": "^4.3.1",
+    "react-icons": "^4.10.1",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0"
   },
   "devEngines": {
     "node": ">=14.x",
     "npm": ">=7.x"
-  },
-  "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
   "browserslist": [],
   "prettier": {

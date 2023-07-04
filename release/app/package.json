@@ -1,12 +1,12 @@
 {
-  "name": "electron-react-boilerplate",
-  "version": "4.5.0",
-  "description": "A foundation for scalable desktop apps",
+  "name": "reactron",
+  "version": "1.0.0",
+  "description": "Find your dupes bitch",
   "main": "./dist/main/main.js",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://github.com/electron-react-boilerplate"
+    "name": "Reactron",
+    "email": "kingkodaninja@gmail.com",
+    "url": "https://github.com/king-koda/reactron"
   },
   "scripts": {
     "electron-rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",

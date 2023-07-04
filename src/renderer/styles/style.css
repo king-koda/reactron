@@ -17,5 +17,9 @@
   box-shadow: white;
 }
 .chakra-text {
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Source Sans Pro';
+}
+
+.chakra-heading {
+  font-family: 'Source Sans Pro';
 }

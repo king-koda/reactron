@@ -45,10 +45,10 @@ export function saveJSON2File(cache: NodeCache) {
   const cacheKeyList: string[] = cache.keys();
   const cachedHt = cache.mget(cacheKeyList);
 
-  fs.writeFileSync(
-    'C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json',
-    JSON.stringify(cachedHt, null, 2)
-  );
+  // fs.writeFileSync(
+  //   'C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json',
+  //   JSON.stringify(cachedHt, null, 2)
+  // );
   return true;
 }
 

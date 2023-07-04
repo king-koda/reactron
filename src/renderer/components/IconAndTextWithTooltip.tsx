@@ -1,20 +1,22 @@
 import { Tooltip, TooltipProps } from '@chakra-ui/react';
 import React from 'react';
-import IconAndText, { IconAndTextProps } from './icons/IconAndText';
+import CustomIcon, { CustomIconProps } from './icons/CustomIcon';
 
-type IconAndTextWithTooltipProps = IconAndTextProps & {
+type IconAndTextWithTooltipProps = CustomIconProps & {
   tooltipProps?: Omit<TooltipProps, 'children'>;
 };
 
-export const IconAndTextWithTooltip = ({
+const IconAndTextWithTooltip = ({
   tooltipProps,
   ...rest
 }: IconAndTextWithTooltipProps) => {
   return (
-    <Tooltip placement='top' openDelay={500} {...tooltipProps}>
+    <Tooltip placement="top" openDelay={0} {...tooltipProps}>
       <span>
-        <IconAndText {...rest} />
+        <CustomIcon {...rest} />
       </span>
     </Tooltip>
   );
 };
+
+export default IconAndTextWithTooltip;

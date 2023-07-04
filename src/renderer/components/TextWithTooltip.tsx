@@ -5,18 +5,17 @@ type TextWithTooltipProps = TextProps & {
   tooltipProps?: Omit<TooltipProps, 'children'>;
 };
 
-export const TextWithTooltip = ({
+const TextWithTooltip = ({
   tooltipProps,
   children,
   ...rest
 }: TextWithTooltipProps) => {
   return (
-    <Tooltip placement='top' openDelay={500} {...tooltipProps}>
+    <Tooltip placement="top" openDelay={250} {...tooltipProps}>
       <Text
-        width={'100%'}
-        textOverflow={'ellipsis'}
-        overflow={'hidden'}
-        whiteSpace={'nowrap'}
+        textOverflow="ellipsis"
+        overflow="hidden"
+        whiteSpace="nowrap"
         {...rest}
       >
         {children}
@@ -24,3 +23,4 @@ export const TextWithTooltip = ({
     </Tooltip>
   );
 };
+export default TextWithTooltip;

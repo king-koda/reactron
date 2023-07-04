@@ -93,7 +93,7 @@ const createWindow = async () => {
     show: false,
     width: 1920,
     height: 1080,
-    icon: getAssetPath('icon.png'),
+    icon: getAssetPath('app-icon.png'),
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
@@ -194,7 +194,7 @@ app
       'run:walkFs',
       async (event: IpcMainInvokeEvent, rootPath: string) => {
         const result = await walk(gNodeCache, rootPath);
-        saveJSON2File(gNodeCache);
+        // saveJSON2File(gNodeCache);
 
         if (result) return getStrigifiedHtKeys(gNodeCache);
         return false;
