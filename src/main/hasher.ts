@@ -49,6 +49,7 @@ export function saveJSON2File(cache: NodeCache) {
   //   'C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json',
   //   JSON.stringify(cachedHt, null, 2)
   // );
+
   return true;
 }
 
@@ -159,6 +160,7 @@ export async function deleteDuplicates(toBeDeleted: string[]) {
 }
 
 export function getJSONFromFile() {
+  // hard coded for now
   return fs.readFileSync(
     'C:\\Users\\Christian\\Documents\\dev\\reactron\\src\\main\\ht.json'
   );
